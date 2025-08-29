@@ -1,0 +1,83 @@
+
+site_name: 45 Days Backend Concepts
+site_description: A 45-day learning plan covering essential backend concepts with beginner-friendly notes and Java examples.
+site_url: https://Arun-Labana.github.io/backend  # <- update me
+repo_url: https://github.com/Arun-Labana/backend  # <- update me
+repo_name: Arun_Labana/backend
+
+# If your markdown lives in a folder named 'Backend_Concepts_45_Days' at repo root,
+# we point MkDocs to it so you don't need to move files.
+docs_dir: Backend_Concepts_45_Days
+
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.sections
+    - navigation.tracking
+    - content.code.copy
+    - content.action.edit
+    - search.suggest
+    - search.highlight
+  palette:
+    - scheme: default
+
+nav:
+  - Home: index.md
+  - Days:
+      - "01. Connection Pooling": "01. Connection Pooling/README.md"
+      - "02. Idempotency": "02. Idempotency/README.md"
+      - "03. Caching (In-Memory vs Distributed)": "03. Caching (In-Memory vs Distributed)/README.md"
+      - "04. Load Balancing": "04. Load Balancing/README.md"
+      - "05. Rate Limiting & Throttling": "05. Rate Limiting & Throttling/README.md"
+      - "06. Horizontal vs Vertical Scaling": "06. Horizontal vs Vertical Scaling/README.md"
+      - "07. Stateless vs Stateful Architecture": "07. Stateless vs Stateful Architecture/README.md"
+      - "08. Transactions (ACID properties)": "08. Transactions (ACID properties)/README.md"
+      - "09. Indexes (B-Tree, Hash, etc.)": "09. Indexes (B-Tree, Hash, etc.)/README.md"
+      - "10. Joins & Query Optimization": "10. Joins & Query Optimization/README.md"
+      - "11. Normalization vs Denormalization": "11. Normalization vs Denormalization/README.md"
+      - "12. Sharding": "12. Sharding/README.md"
+      - "13. Replication": "13. Replication/README.md"
+      - "14. CAP Theorem": "14. CAP Theorem/README.md"
+      - "15. REST APIs": "15. REST APIs/README.md"
+      - "16. GraphQL Basics": "16. GraphQL Basics/README.md"
+      - "17. gRPC & Protocol Buffers": "17. gRPC & Protocol Buffers/README.md"
+      - "18. WebSockets (Realtime communication)": "18. WebSockets (Realtime communication)/README.md"
+      - "19. Message Queues (RabbitMQ, Kafka, SQS)": "19. Message Queues (RabbitMQ, Kafka, SQS)/README.md"
+      - "20. Event-driven Architecture": "20. Event-driven Architecture/README.md"
+      - "21. API Gateway": "21. API Gateway/README.md"
+      - "22. Circuit Breaker Pattern": "22. Circuit Breaker Pattern/README.md"
+      - "23. Retry & Backoff Strategies": "23. Retry & Backoff Strategies/README.md"
+      - "24. Dead Letter Queues": "24. Dead Letter Queues/README.md"
+      - "25. Distributed Locks": "25. Distributed Locks/README.md"
+      - "26. Leader Election": "26. Leader Election/README.md"
+      - "27. Consensus Algorithms (Raft, Paxos basics)": "27. Consensus Algorithms (Raft, Paxos basics)/README.md"
+      - "28. Quorum in Databases": "28. Quorum in Databases/README.md"
+      - "29. Authentication vs Authorization": "29. Authentication vs Authorization/README.md"
+      - "30. JWT & OAuth2": "30. JWT & OAuth2/README.md"
+      - "31. CSRF & XSS Protection": "31. CSRF & XSS Protection/README.md"
+      - "32. SQL Injection & Prevention": "32. SQL Injection & Prevention/README.md"
+      - "33. HTTPS & TLS": "33. HTTPS & TLS/README.md"
+      - "34. CORS (Cross-Origin Resource Sharing)": "34. CORS (Cross-Origin Resource Sharing)/README.md"
+      - "35. Hashing & Password Storage (bcrypt, Argon2)": "35. Hashing & Password Storage (bcrypt, Argon2)/README.md"
+      - "36. Logging Strategies (Structured Logging)": "36. Logging Strategies (Structured Logging)/README.md"
+      - "37. Metrics & Monitoring (Prometheus, Grafana)": "37. Metrics & Monitoring (Prometheus, Grafana)/README.md"
+      - "38. Tracing (Distributed Tracing, OpenTelemetry)": "38. Tracing (Distributed Tracing, OpenTelemetry)/README.md"
+      - "39. Health Checks": "39. Health Checks/README.md"
+      - "40. Profiling & Benchmarking": "40. Profiling & Benchmarking/README.md"
+      - "41. Error Handling Patterns": "41. Error Handling Patterns/README.md"
+      - "42. Blue-Green & Canary Deployments": "42. Blue-Green & Canary Deployments/README.md"
+      - "43. CQRS (Command Query Responsibility Segregation)": "43. CQRS (Command Query Responsibility Segregation)/README.md"
+      - "44. Event Sourcing": "44. Event Sourcing/README.md"
+      - "45. Microservices vs Monoliths vs Serverless": "45. Microservices vs Monoliths vs Serverless/README.md"
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - codehilite
+  - tables
+  - attr_list
