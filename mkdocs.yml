@@ -2,9 +2,10 @@ site_name: 45 Days Backend Concepts
 site_description: A 45-day learning plan covering essential backend concepts with beginner-friendly notes and Java examples.
 site_url: https://Arun-Labana.github.io/backend
 repo_url: https://github.com/Arun-Labana/backend
-repo_name: Arun-Labana/backend   # (use hyphen, not underscore)
+repo_name: Arun-Labana/backend
 
-docs_dir: .
+docs_dir: docs      # <-- child directory, sibling of mkdocs.yml
+# site_dir: site    # (optional) default is 'site' at repo root (sibling). Do NOT place inside docs/.
 
 theme:
   name: material
