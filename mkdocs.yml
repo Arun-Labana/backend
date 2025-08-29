@@ -7,7 +7,7 @@ repo_name: Arun_Labana/backend
 
 # If your markdown lives in a folder named 'Backend_Concepts_45_Days' at repo root,
 # we point MkDocs to it so you don't need to move files.
-docs_dir: Backend_Concepts_45_Days
+# docs_dir: Backend_Concepts_45_Days
 
 theme:
   name: material
