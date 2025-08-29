@@ -1,13 +1,10 @@
-
 site_name: 45 Days Backend Concepts
 site_description: A 45-day learning plan covering essential backend concepts with beginner-friendly notes and Java examples.
-site_url: https://Arun-Labana.github.io/backend  # <- update me
-repo_url: https://github.com/Arun-Labana/backend  # <- update me
-repo_name: Arun-Labana/backend
+site_url: https://Arun-Labana.github.io/backend
+repo_url: https://github.com/Arun-Labana/backend
+repo_name: Arun-Labana/backend   # (use hyphen, not underscore)
 
-# If your markdown lives in a folder named 'Backend_Concepts_45_Days' at repo root,
-# we point MkDocs to it so you don't need to move files.
-# docs_dir: Backend_Concepts_45_Days
+docs_dir: .
 
 theme:
   name: material
