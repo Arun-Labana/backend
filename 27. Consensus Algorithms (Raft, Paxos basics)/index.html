@@ -1,0 +1,2465 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A 45-day learning plan covering essential backend concepts with beginner-friendly notes and Java examples.">
+      
+      
+      
+        <link rel="canonical" href="https://Arun-Labana.github.io/backend/27.%20Consensus%20Algorithms%20%28Raft%2C%20Paxos%20basics%29/">
+      
+      
+        <link rel="prev" href="../26.%20Leader%20Election/">
+      
+      
+        <link rel="next" href="../28.%20Quorum%20in%20Databases/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>27. Consensus Algorithms (Raft, Paxos basics) - 45 Days Backend Concepts</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#consensus-algorithms-raft-paxos-basics" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="45 Days Backend Concepts" class="md-header__button md-logo" aria-label="45 Days Backend Concepts" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            45 Days Backend Concepts
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              27. Consensus Algorithms (Raft, Paxos basics)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Arun-Labana/backend" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Arun-Labana/backend
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="45 Days Backend Concepts" class="md-nav__button md-logo" aria-label="45 Days Backend Concepts" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    45 Days Backend Concepts
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Arun-Labana/backend" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Arun-Labana/backend
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Days
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Days
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01.%20Connection%20Pooling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    01. Connection Pooling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02.%20Idempotency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    02. Idempotency
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03.%20Caching%20%28In-Memory%20vs%20Distributed%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    03. Caching (In-Memory vs Distributed)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04.%20Load%20Balancing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    04. Load Balancing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05.%20Rate%20Limiting%20%26%20Throttling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    05. Rate Limiting & Throttling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06.%20Horizontal%20vs%20Vertical%20Scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    06. Horizontal vs Vertical Scaling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07.%20Stateless%20vs%20Stateful%20Architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    07. Stateless vs Stateful Architecture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08.%20Transactions%20%28ACID%20properties%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    08. Transactions (ACID properties)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09.%20Indexes%20%28B-Tree%2C%20Hash%2C%20etc.%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    09. Indexes (B-Tree, Hash, etc.)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10.%20Joins%20%26%20Query%20Optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    10. Joins & Query Optimization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11.%20Normalization%20vs%20Denormalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    11. Normalization vs Denormalization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12.%20Sharding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    12. Sharding
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13.%20Replication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    13. Replication
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14.%20CAP%20Theorem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    14. CAP Theorem
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../15.%20REST%20APIs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    15. REST APIs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../16.%20GraphQL%20Basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    16. GraphQL Basics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../17.%20gRPC%20%26%20Protocol%20Buffers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    17. gRPC & Protocol Buffers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../18.%20WebSockets%20%28Realtime%20communication%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    18. WebSockets (Realtime communication)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../19.%20Message%20Queues%20%28RabbitMQ%2C%20Kafka%2C%20SQS%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    19. Message Queues (RabbitMQ, Kafka, SQS)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../20.%20Event-driven%20Architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    20. Event-driven Architecture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../21.%20API%20Gateway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    21. API Gateway
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../22.%20Circuit%20Breaker%20Pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    22. Circuit Breaker Pattern
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../23.%20Retry%20%26%20Backoff%20Strategies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    23. Retry & Backoff Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../24.%20Dead%20Letter%20Queues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    24. Dead Letter Queues
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../25.%20Distributed%20Locks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    25. Distributed Locks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../26.%20Leader%20Election/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    26. Leader Election
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    27. Consensus Algorithms (Raft, Paxos basics)
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    27. Consensus Algorithms (Raft, Paxos basics)
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-are-consensus-algorithms" class="md-nav__link">
+    <span class="md-ellipsis">
+      What are Consensus Algorithms?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-consensus-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Consensus Problem
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Consensus Problem">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-consensus-is-difficult" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Consensus is Difficult
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#safety-and-liveness-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      Safety and Liveness Properties
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#byzantine-vs-non-byzantine-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Byzantine vs Non-Byzantine Failures
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paxos-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paxos Algorithm
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Paxos Algorithm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-paxos-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Paxos Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paxos-phases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paxos Phases
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-paxos-and-practical-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-Paxos and Practical Considerations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#raft-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raft Algorithm
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Raft Algorithm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rafts-design-philosophy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raft's Design Philosophy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#raft-states-and-terms" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raft States and Terms
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#leader-election-in-raft" class="md-nav__link">
+    <span class="md-ellipsis">
+      Leader Election in Raft
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-replication-in-raft" class="md-nav__link">
+    <span class="md-ellipsis">
+      Log Replication in Raft
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Applications
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Applications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#distributed-databases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Distributed Databases
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Management
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distributed-coordination-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      Distributed Coordination Services
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#blockchain-and-cryptocurrency" class="md-nav__link">
+    <span class="md-ellipsis">
+      Blockchain and Cryptocurrency
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simple-raft-inspired-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simple Raft-Inspired Implementation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-interview-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Interview Questions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consensus-algorithm-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Consensus Algorithm Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consensus Algorithm Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choose-the-right-algorithm-for-your-needs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Choose the Right Algorithm for Your Needs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implement-proper-failure-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implement Proper Failure Detection
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tune-timeouts-carefully" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tune Timeouts Carefully
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plan-for-cluster-membership-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plan for Cluster Membership Changes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-consensus-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor Consensus Health
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design-for-operational-simplicity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design for Operational Simplicity
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../28.%20Quorum%20in%20Databases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    28. Quorum in Databases
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../29.%20Authentication%20vs%20Authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    29. Authentication vs Authorization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../30.%20JWT%20%26%20OAuth2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    30. JWT & OAuth2
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../31.%20CSRF%20%26%20XSS%20Protection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    31. CSRF & XSS Protection
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../32.%20SQL%20Injection%20%26%20Prevention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    32. SQL Injection & Prevention
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../33.%20HTTPS%20%26%20TLS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    33. HTTPS & TLS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../34.%20CORS%20%28Cross-Origin%20Resource%20Sharing%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    34. CORS (Cross-Origin Resource Sharing)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../35.%20Hashing%20%26%20Password%20Storage%20%28bcrypt%2C%20Argon2%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    35. Hashing & Password Storage (bcrypt, Argon2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../36.%20Logging%20Strategies%20%28Structured%20Logging%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    36. Logging Strategies (Structured Logging)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../37.%20Metrics%20%26%20Monitoring%20%28Prometheus%2C%20Grafana%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    37. Metrics & Monitoring (Prometheus, Grafana)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../38.%20Tracing%20%28Distributed%20Tracing%2C%20OpenTelemetry%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    38. Tracing (Distributed Tracing, OpenTelemetry)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../39.%20Health%20Checks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    39. Health Checks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../40.%20Profiling%20%26%20Benchmarking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    40. Profiling & Benchmarking
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../41.%20Error%20Handling%20Patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    41. Error Handling Patterns
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../42.%20Blue-Green%20%26%20Canary%20Deployments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    42. Blue-Green & Canary Deployments
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../43.%20CQRS%20%28Command%20Query%20Responsibility%20Segregation%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    43. CQRS (Command Query Responsibility Segregation)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../44.%20Event%20Sourcing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    44. Event Sourcing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../45.%20Microservices%20vs%20Monoliths%20vs%20Serverless/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    45. Microservices vs Monoliths vs Serverless
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-are-consensus-algorithms" class="md-nav__link">
+    <span class="md-ellipsis">
+      What are Consensus Algorithms?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-consensus-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Consensus Problem
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Consensus Problem">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-consensus-is-difficult" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Consensus is Difficult
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#safety-and-liveness-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      Safety and Liveness Properties
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#byzantine-vs-non-byzantine-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Byzantine vs Non-Byzantine Failures
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paxos-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paxos Algorithm
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Paxos Algorithm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-paxos-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Paxos Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paxos-phases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Paxos Phases
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-paxos-and-practical-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Multi-Paxos and Practical Considerations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#raft-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raft Algorithm
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Raft Algorithm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rafts-design-philosophy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raft's Design Philosophy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#raft-states-and-terms" class="md-nav__link">
+    <span class="md-ellipsis">
+      Raft States and Terms
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#leader-election-in-raft" class="md-nav__link">
+    <span class="md-ellipsis">
+      Leader Election in Raft
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-replication-in-raft" class="md-nav__link">
+    <span class="md-ellipsis">
+      Log Replication in Raft
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Applications
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Applications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#distributed-databases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Distributed Databases
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Management
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distributed-coordination-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      Distributed Coordination Services
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#blockchain-and-cryptocurrency" class="md-nav__link">
+    <span class="md-ellipsis">
+      Blockchain and Cryptocurrency
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simple-raft-inspired-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simple Raft-Inspired Implementation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-interview-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Interview Questions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consensus-algorithm-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Consensus Algorithm Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consensus Algorithm Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choose-the-right-algorithm-for-your-needs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Choose the Right Algorithm for Your Needs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implement-proper-failure-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implement Proper Failure Detection
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tune-timeouts-carefully" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tune Timeouts Carefully
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plan-for-cluster-membership-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plan for Cluster Membership Changes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-consensus-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor Consensus Health
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design-for-operational-simplicity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design for Operational Simplicity
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/Arun-Labana/backend/edit/master/docs/27. Consensus Algorithms (Raft, Paxos basics)/README.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="consensus-algorithms-raft-paxos-basics">Consensus Algorithms (Raft, Paxos basics)<a class="headerlink" href="#consensus-algorithms-raft-paxos-basics" title="Permanent link">&para;</a></h1>
+<h2 id="what-are-consensus-algorithms">What are Consensus Algorithms?<a class="headerlink" href="#what-are-consensus-algorithms" title="Permanent link">&para;</a></h2>
+<p>Consensus algorithms are protocols that enable multiple nodes in a distributed system to agree on a single value or decision, even in the presence of failures, network partitions, and timing uncertainties. Think of consensus algorithms like a group of friends trying to decide where to go for dinner when they can only communicate through unreliable text messages - some messages might be lost, delayed, or arrive out of order, and some friends might not respond at all. A good consensus protocol ensures that everyone who participates ends up agreeing on the same restaurant, even if the communication is imperfect.</p>
+<p>In distributed systems, achieving consensus is fundamental for maintaining consistency across multiple nodes. Whether it's agreeing on the next entry in a replicated log, electing a leader, or coordinating a distributed transaction, consensus algorithms provide the mathematical and algorithmic foundation that ensures all participating nodes reach the same decision despite the inherent unreliability of distributed environments.</p>
+<h2 id="the-consensus-problem">The Consensus Problem<a class="headerlink" href="#the-consensus-problem" title="Permanent link">&para;</a></h2>
+<h3 id="why-consensus-is-difficult">Why Consensus is Difficult<a class="headerlink" href="#why-consensus-is-difficult" title="Permanent link">&para;</a></h3>
+<p>Consensus in distributed systems is challenging because of several fundamental issues. Network partitions can split nodes into groups that can't communicate with each other, making it impossible to know if other nodes are alive or have failed. Message delays and reordering can cause nodes to receive information in different orders, leading to different conclusions. Node failures can occur at any time, and it's often impossible to distinguish between a slow node and a failed node.</p>
+<p>The famous FLP (Fischer, Lynch, Paterson) impossibility result proves that in an asynchronous distributed system, it's impossible to guarantee consensus if even one node can fail. This doesn't mean consensus is impossible in practice, but it shows that any practical consensus algorithm must make trade-offs between safety, liveness, and fault tolerance.</p>
+<h3 id="safety-and-liveness-properties">Safety and Liveness Properties<a class="headerlink" href="#safety-and-liveness-properties" title="Permanent link">&para;</a></h3>
+<p>Consensus algorithms must satisfy two critical properties. Safety means that all nodes that reach a decision agree on the same value - there should never be a situation where different nodes decide on different values. Liveness means that eventually, some decision will be reached - the algorithm shouldn't get stuck forever without making progress.</p>
+<p>Balancing these properties is the core challenge of consensus algorithm design. Prioritizing safety might lead to situations where no progress is made during network partitions, while prioritizing liveness might risk inconsistent decisions.</p>
+<h3 id="byzantine-vs-non-byzantine-failures">Byzantine vs Non-Byzantine Failures<a class="headerlink" href="#byzantine-vs-non-byzantine-failures" title="Permanent link">&para;</a></h3>
+<p>Consensus algorithms are typically designed for either Byzantine or non-Byzantine failure models. Non-Byzantine failures assume that nodes either work correctly or stop working entirely - they don't send incorrect or malicious messages. Byzantine failures allow for nodes that might send arbitrary or malicious messages, either due to bugs, corruption, or actual malicious behavior.</p>
+<p>Most practical distributed systems use non-Byzantine consensus algorithms because they're simpler, more efficient, and sufficient for environments where nodes are trusted but might fail due to hardware issues or network problems.</p>
+<h2 id="paxos-algorithm">Paxos Algorithm<a class="headerlink" href="#paxos-algorithm" title="Permanent link">&para;</a></h2>
+<h3 id="basic-paxos-overview">Basic Paxos Overview<a class="headerlink" href="#basic-paxos-overview" title="Permanent link">&para;</a></h3>
+<p>Paxos, developed by Leslie Lamport, is one of the most famous consensus algorithms, though it's also notorious for being difficult to understand and implement correctly. The basic Paxos algorithm works through a series of phases where nodes take on roles as proposers (who suggest values), acceptors (who vote on proposals), and learners (who learn the final decision).</p>
+<p>The algorithm ensures that once a value is chosen by a majority of acceptors, that value becomes the permanent decision, and no other value can be chosen. This is achieved through a careful protocol of proposal numbers, promises, and acceptance criteria that prevent conflicting decisions even in the face of failures and message delays.</p>
+<h3 id="paxos-phases">Paxos Phases<a class="headerlink" href="#paxos-phases" title="Permanent link">&para;</a></h3>
+<p>Paxos operates in two main phases. In Phase 1 (Prepare), a proposer selects a unique proposal number and sends prepare requests to a majority of acceptors. Acceptors respond with a promise not to accept any proposals with lower numbers, and if they've previously accepted a proposal, they include that information in their response.</p>
+<p>In Phase 2 (Accept), if the proposer receives promises from a majority of acceptors, it sends accept requests with either the highest-numbered value from the promises or its own proposed value if no previous values were reported. Acceptors accept the proposal if they haven't promised to ignore it, and once a majority accepts, the value is chosen.</p>
+<h3 id="multi-paxos-and-practical-considerations">Multi-Paxos and Practical Considerations<a class="headerlink" href="#multi-paxos-and-practical-considerations" title="Permanent link">&para;</a></h3>
+<p>Basic Paxos is primarily of theoretical interest because it only achieves consensus on a single value. Practical systems need to agree on a sequence of values, leading to Multi-Paxos, which optimizes the basic protocol by electing a stable leader who can skip the prepare phase for subsequent proposals.</p>
+<p>However, even Multi-Paxos is complex to implement correctly, with many subtle edge cases around leader election, failure detection, and recovery. This complexity has led to the development of more understandable alternatives like Raft.</p>
+<h2 id="raft-algorithm">Raft Algorithm<a class="headerlink" href="#raft-algorithm" title="Permanent link">&para;</a></h2>
+<h3 id="rafts-design-philosophy">Raft's Design Philosophy<a class="headerlink" href="#rafts-design-philosophy" title="Permanent link">&para;</a></h3>
+<p>Raft was designed explicitly to be more understandable than Paxos while providing equivalent safety and availability guarantees. The algorithm decomposes the consensus problem into three relatively independent subproblems: leader election, log replication, and safety. This decomposition makes Raft easier to understand, implement, and reason about.</p>
+<p>Raft uses a strong leader model where all client requests go through the leader, which then replicates entries to follower nodes. This simplifies the protocol compared to Paxos's more symmetric approach where multiple nodes can propose values simultaneously.</p>
+<h3 id="raft-states-and-terms">Raft States and Terms<a class="headerlink" href="#raft-states-and-terms" title="Permanent link">&para;</a></h3>
+<p>In Raft, each node is in one of three states: leader, follower, or candidate. Time is divided into terms, which are monotonically increasing integers that act like logical clocks. Each term begins with an election, and at most one leader can be elected per term.</p>
+<p>Terms help detect stale information and ensure that nodes don't accept commands from outdated leaders. When nodes communicate, they include their current term, and if a node discovers its term is outdated, it immediately updates and reverts to follower state.</p>
+<h3 id="leader-election-in-raft">Leader Election in Raft<a class="headerlink" href="#leader-election-in-raft" title="Permanent link">&para;</a></h3>
+<p>Raft's leader election process is triggered when followers don't receive heartbeats from the current leader within a timeout period. A follower becomes a candidate, increments its term, votes for itself, and requests votes from other nodes. A candidate becomes leader if it receives votes from a majority of nodes.</p>
+<p>Raft uses randomized election timeouts to reduce the likelihood of split votes where multiple candidates receive the same number of votes. If an election fails to produce a leader, nodes start a new election with a new term.</p>
+<h3 id="log-replication-in-raft">Log Replication in Raft<a class="headerlink" href="#log-replication-in-raft" title="Permanent link">&para;</a></h3>
+<p>Once elected, the leader handles all client requests by appending entries to its log and replicating them to followers. Each log entry contains a command, the term when it was created, and an index position. The leader sends AppendEntries messages to followers, who append the entries to their logs if they pass consistency checks.</p>
+<p>An entry is considered committed once it's replicated to a majority of nodes. The leader tracks the highest committed index and includes this information in subsequent AppendEntries messages, allowing followers to learn which entries are safe to apply to their state machines.</p>
+<h2 id="real-world-applications">Real-World Applications<a class="headerlink" href="#real-world-applications" title="Permanent link">&para;</a></h2>
+<h3 id="distributed-databases">Distributed Databases<a class="headerlink" href="#distributed-databases" title="Permanent link">&para;</a></h3>
+<p>Consensus algorithms are fundamental to distributed databases that need to maintain consistency across multiple replicas. Systems like CockroachDB use Raft to ensure that all replicas of a data range agree on the sequence of transactions, while MongoDB uses a Raft-like algorithm for replica set coordination.</p>
+<p>These databases use consensus to agree on which transactions to commit, in what order, and how to handle conflicts between concurrent operations across different nodes.</p>
+<h3 id="configuration-management">Configuration Management<a class="headerlink" href="#configuration-management" title="Permanent link">&para;</a></h3>
+<p>Distributed configuration systems like etcd and Consul use consensus algorithms to ensure that all nodes have a consistent view of configuration data. When configuration changes are made, consensus ensures that all nodes agree on the new configuration and apply changes in the same order.</p>
+<p>This is critical for systems like Kubernetes, where inconsistent configuration views could lead to different nodes making conflicting scheduling decisions or applying different policies.</p>
+<h3 id="distributed-coordination-services">Distributed Coordination Services<a class="headerlink" href="#distributed-coordination-services" title="Permanent link">&para;</a></h3>
+<p>Services like Apache ZooKeeper use consensus algorithms to provide coordination primitives like distributed locks, leader election, and group membership. These services act as the coordination backbone for larger distributed systems.</p>
+<p>For example, Kafka uses ZooKeeper (which implements a Paxos-like algorithm) to coordinate broker membership, partition leadership, and configuration management across the Kafka cluster.</p>
+<h3 id="blockchain-and-cryptocurrency">Blockchain and Cryptocurrency<a class="headerlink" href="#blockchain-and-cryptocurrency" title="Permanent link">&para;</a></h3>
+<p>Blockchain systems use consensus algorithms to agree on the next block to add to the chain. While Bitcoin uses Proof of Work and other cryptocurrencies use various consensus mechanisms, the fundamental problem is the same: getting distributed nodes to agree on a single version of the ledger.</p>
+<p>Permissioned blockchain systems often use traditional consensus algorithms like Raft or PBFT (Practical Byzantine Fault Tolerance) for faster transaction processing in trusted environments.</p>
+<h2 id="simple-raft-inspired-implementation">Simple Raft-Inspired Implementation<a class="headerlink" href="#simple-raft-inspired-implementation" title="Permanent link">&para;</a></h2>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NodeState</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">FOLLOWER</span> <span class="o">=</span> <span class="s2">&quot;follower&quot;</span>
+    <span class="n">CANDIDATE</span> <span class="o">=</span> <span class="s2">&quot;candidate&quot;</span>
+    <span class="n">LEADER</span> <span class="o">=</span> <span class="s2">&quot;leader&quot;</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LogEntry</span><span class="p">:</span>
+    <span class="n">term</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">index</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">command</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="n">timestamp</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">VoteRequest</span><span class="p">:</span>
+    <span class="n">term</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">candidate_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">last_log_index</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">last_log_term</span><span class="p">:</span> <span class="nb">int</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">VoteResponse</span><span class="p">:</span>
+    <span class="n">term</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">vote_granted</span><span class="p">:</span> <span class="nb">bool</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AppendEntriesRequest</span><span class="p">:</span>
+    <span class="n">term</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">leader_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">prev_log_index</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">prev_log_term</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">entries</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LogEntry</span><span class="p">]</span>
+    <span class="n">leader_commit</span><span class="p">:</span> <span class="nb">int</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AppendEntriesResponse</span><span class="p">:</span>
+    <span class="n">term</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">success</span><span class="p">:</span> <span class="nb">bool</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RaftNode</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cluster_nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_id</span> <span class="o">=</span> <span class="n">node_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cluster_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">cluster_nodes</span> <span class="k">if</span> <span class="n">n</span> <span class="o">!=</span> <span class="n">node_id</span><span class="p">]</span>
+
+        <span class="c1"># Persistent state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_term</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">voted_for</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LogEntry</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Volatile state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commit_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_applied</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">NodeState</span><span class="o">.</span><span class="n">FOLLOWER</span>
+
+        <span class="c1"># Leader state (reinitialized after election)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_index</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">match_index</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Timing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">election_timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_election_timeout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_heartbeat</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heartbeat_interval</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+        <span class="c1"># Threading</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+        <span class="c1"># Simulated network (in real implementation, this would be actual network calls)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message_handlers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;RaftNode&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_random_election_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate randomized election timeout to prevent split votes&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start the Raft node&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">election_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_election_loop</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heartbeat_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_heartbeat_loop</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">election_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heartbeat_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node_id</span><span class="si">}</span><span class="s2"> started as </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop the Raft node&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_peer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">peer_node</span><span class="p">:</span> <span class="s1">&#39;RaftNode&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a peer node for message passing (simulation only)&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message_handlers</span><span class="p">[</span><span class="n">peer_node</span><span class="o">.</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">peer_node</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_election_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Main election monitoring loop&quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">NodeState</span><span class="o">.</span><span class="n">FOLLOWER</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">NodeState</span><span class="o">.</span><span class="n">CANDIDATE</span><span class="p">:</span>
+                    <span class="n">time_since_heartbeat</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_heartbeat</span>
+                    <span class="k">if</span> <span class="n">time_since_heartbeat</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">election_timeout</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_start_election</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_heartbeat_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send heartbeats if leader&quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">NodeState</span><span class="o">.</span><span class="n">LEADER</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_send_heartbeats</span><span class="p">()</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">heartbeat_interval</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_start_election</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start a new leader election&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">NodeState</span><span class="o">.</span><span class="n">CANDIDATE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_term</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">voted_for</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_heartbeat</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">election_timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_election_timeout</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node_id</span><span class="si">}</span><span class="s2">: Starting election for term </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Vote for ourselves</span>
+        <span class="n">votes</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># Request votes from other nodes</span>
+        <span class="n">last_log_index</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">last_log_term</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">term</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="k">else</span> <span class="mi">0</span>
+
+        <span class="n">vote_request</span> <span class="o">=</span> <span class="n">VoteRequest</span><span class="p">(</span>
+            <span class="n">term</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current_term</span><span class="p">,</span>
+            <span class="n">candidate_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span>
+            <span class="n">last_log_index</span><span class="o">=</span><span class="n">last_log_index</span><span class="p">,</span>
+            <span class="n">last_log_term</span><span class="o">=</span><span class="n">last_log_term</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">peer_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">peer_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_handlers</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_handlers</span><span class="p">[</span><span class="n">peer_id</span><span class="p">]</span><span class="o">.</span><span class="n">handle_vote_request</span><span class="p">(</span><span class="n">vote_request</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">vote_granted</span><span class="p">:</span>
+                    <span class="n">votes</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">term</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_term</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_term</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">term</span><span class="p">)</span>
+                    <span class="k">return</span>
+
+        <span class="c1"># Check if we won the election</span>
+        <span class="n">total_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cluster_nodes</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">votes</span> <span class="o">&gt;</span> <span class="n">total_nodes</span> <span class="o">//</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_become_leader</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node_id</span><span class="si">}</span><span class="s2">: Election failed, got </span><span class="si">{</span><span class="n">votes</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">total_nodes</span><span class="si">}</span><span class="s2"> votes&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">NodeState</span><span class="o">.</span><span class="n">FOLLOWER</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_become_leader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Become the cluster leader&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">NodeState</span><span class="o">.</span><span class="n">LEADER</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node_id</span><span class="si">}</span><span class="s2">: ELECTED LEADER for term </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Initialize leader state</span>
+        <span class="n">last_log_index</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">peer_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_nodes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">next_index</span><span class="p">[</span><span class="n">peer_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">last_log_index</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">match_index</span><span class="p">[</span><span class="n">peer_id</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Send immediate heartbeat to establish authority</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send_heartbeats</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_send_heartbeats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send heartbeat/append entries to all followers&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">peer_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">peer_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_handlers</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_send_append_entries</span><span class="p">(</span><span class="n">peer_id</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_send_append_entries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">peer_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send append entries to a specific peer&quot;&quot;&quot;</span>
+        <span class="n">next_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_index</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">peer_id</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">))</span>
+        <span class="n">prev_log_index</span> <span class="o">=</span> <span class="n">next_index</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">prev_log_term</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">[</span><span class="n">prev_log_index</span><span class="p">]</span><span class="o">.</span><span class="n">term</span> <span class="k">if</span> <span class="n">prev_log_index</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="k">else</span> <span class="mi">0</span>
+
+        <span class="c1"># For heartbeat, send empty entries</span>
+        <span class="n">entries</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">request</span> <span class="o">=</span> <span class="n">AppendEntriesRequest</span><span class="p">(</span>
+            <span class="n">term</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current_term</span><span class="p">,</span>
+            <span class="n">leader_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span>
+            <span class="n">prev_log_index</span><span class="o">=</span><span class="n">prev_log_index</span><span class="p">,</span>
+            <span class="n">prev_log_term</span><span class="o">=</span><span class="n">prev_log_term</span><span class="p">,</span>
+            <span class="n">entries</span><span class="o">=</span><span class="n">entries</span><span class="p">,</span>
+            <span class="n">leader_commit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">commit_index</span>
+        <span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_handlers</span><span class="p">[</span><span class="n">peer_id</span><span class="p">]</span><span class="o">.</span><span class="n">handle_append_entries</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">term</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_term</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_term</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">term</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_vote_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">VoteRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VoteResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle incoming vote request&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="c1"># Update term if necessary</span>
+            <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">term</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_term</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_term</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">term</span><span class="p">)</span>
+
+            <span class="n">vote_granted</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">term</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_term</span><span class="p">:</span>
+                <span class="c1"># Check if we can vote for this candidate</span>
+                <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">voted_for</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">voted_for</span> <span class="o">==</span> <span class="n">request</span><span class="o">.</span><span class="n">candidate_id</span><span class="p">):</span>
+                    <span class="c1"># Check if candidate&#39;s log is at least as up-to-date as ours</span>
+                    <span class="n">last_log_index</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+                    <span class="n">last_log_term</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">term</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="k">else</span> <span class="mi">0</span>
+
+                    <span class="n">log_ok</span> <span class="o">=</span> <span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">last_log_term</span> <span class="o">&gt;</span> <span class="n">last_log_term</span> <span class="ow">or</span> 
+                             <span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">last_log_term</span> <span class="o">==</span> <span class="n">last_log_term</span> <span class="ow">and</span> 
+                              <span class="n">request</span><span class="o">.</span><span class="n">last_log_index</span> <span class="o">&gt;=</span> <span class="n">last_log_index</span><span class="p">))</span>
+
+                    <span class="k">if</span> <span class="n">log_ok</span><span class="p">:</span>
+                        <span class="n">vote_granted</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">voted_for</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">candidate_id</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">last_heartbeat</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node_id</span><span class="si">}</span><span class="s2">: Voted for </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">candidate_id</span><span class="si">}</span><span class="s2"> in term </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">term</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">VoteResponse</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current_term</span><span class="p">,</span> <span class="n">vote_granted</span><span class="o">=</span><span class="n">vote_granted</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_append_entries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">AppendEntriesRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppendEntriesResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle incoming append entries request&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="c1"># Update term if necessary</span>
+            <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">term</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_term</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_term</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">term</span><span class="p">)</span>
+
+            <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">term</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_term</span><span class="p">:</span>
+                <span class="c1"># Valid leader for this term</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">NodeState</span><span class="o">.</span><span class="n">FOLLOWER</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">last_heartbeat</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+                <span class="c1"># This is a heartbeat (empty entries)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">entries</span><span class="p">:</span>
+                    <span class="n">success</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node_id</span><span class="si">}</span><span class="s2">: Received heartbeat from leader </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">leader_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">AppendEntriesResponse</span><span class="p">(</span><span class="n">term</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current_term</span><span class="p">,</span> <span class="n">success</span><span class="o">=</span><span class="n">success</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_term</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_term</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update to a new term and revert to follower&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">new_term</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_term</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_term</span> <span class="o">=</span> <span class="n">new_term</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">voted_for</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">NodeState</span><span class="o">.</span><span class="n">FOLLOWER</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node_id</span><span class="si">}</span><span class="s2">: Updated to term </span><span class="si">{</span><span class="n">new_term</span><span class="si">}</span><span class="s2">, became follower&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get current node status&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s1">&#39;node_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span>
+                <span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s1">&#39;term&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_term</span><span class="p">,</span>
+                <span class="s1">&#39;log_length&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">),</span>
+                <span class="s1">&#39;commit_index&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">commit_index</span>
+            <span class="p">}</span>
+
+<span class="c1"># Demonstration of Raft consensus</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">demo_raft_consensus</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Raft Consensus Demonstration ===&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Create a 5-node cluster</span>
+    <span class="n">node_ids</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;node-1&quot;</span><span class="p">,</span> <span class="s2">&quot;node-2&quot;</span><span class="p">,</span> <span class="s2">&quot;node-3&quot;</span><span class="p">,</span> <span class="s2">&quot;node-4&quot;</span><span class="p">,</span> <span class="s2">&quot;node-5&quot;</span><span class="p">]</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Initialize nodes</span>
+    <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="n">node_ids</span><span class="p">:</span>
+        <span class="n">nodes</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">RaftNode</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">)</span>
+
+    <span class="c1"># Connect nodes to each other (for simulation)</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">peer</span> <span class="ow">in</span> <span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">peer</span><span class="o">.</span><span class="n">node_id</span> <span class="o">!=</span> <span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">:</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">add_peer</span><span class="p">(</span><span class="n">peer</span><span class="p">)</span>
+
+    <span class="c1"># Start all nodes</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Initial Election ===&quot;</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>  <span class="c1"># Wait for election to complete</span>
+
+    <span class="c1"># Show cluster status</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get_status</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">status</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">status</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (term </span><span class="si">{</span><span class="n">status</span><span class="p">[</span><span class="s1">&#39;term&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Simulating Leader Failure ===&quot;</span><span class="p">)</span>
+    <span class="c1"># Find and stop the current leader</span>
+    <span class="n">leader</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">NodeState</span><span class="o">.</span><span class="n">LEADER</span><span class="p">:</span>
+            <span class="n">leader</span> <span class="o">=</span> <span class="n">node</span>
+            <span class="k">break</span>
+
+    <span class="k">if</span> <span class="n">leader</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stopping leader: </span><span class="si">{</span><span class="n">leader</span><span class="o">.</span><span class="n">node_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">leader</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="k">del</span> <span class="n">nodes</span><span class="p">[</span><span class="n">leader</span><span class="o">.</span><span class="n">node_id</span><span class="p">]</span>
+
+        <span class="c1"># Wait for new election</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== After Leader Failure ===&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get_status</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">status</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">status</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (term </span><span class="si">{</span><span class="n">status</span><span class="p">[</span><span class="s1">&#39;term&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Clean up</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">demo_raft_consensus</span><span class="p">()</span>
+</code></pre></div>
+
+<h2 id="common-interview-questions">Common Interview Questions<a class="headerlink" href="#common-interview-questions" title="Permanent link">&para;</a></h2>
+<p><strong>Q: What is the difference between Paxos and Raft consensus algorithms?</strong></p>
+<p>Paxos and Raft solve the same fundamental consensus problem but with different approaches. Paxos is more symmetric - any node can propose values, making it theoretically elegant but complex to implement correctly. Raft uses a strong leader model where all requests go through an elected leader, making it easier to understand and implement. Paxos requires fewer message rounds in some scenarios but has complex edge cases. Raft has clearer separation of concerns (leader election, log replication, safety) and is generally considered more practical for real-world systems. Both provide equivalent safety guarantees, but Raft's understandability has made it more popular in modern distributed systems.</p>
+<p><strong>Q: How do consensus algorithms handle network partitions and the CAP theorem?</strong></p>
+<p>Consensus algorithms typically prioritize consistency and partition tolerance over availability (CP in CAP theorem). During network partitions, they require a majority quorum to make progress, meaning the minority partition becomes unavailable for writes. For example, in a 5-node cluster split 3-2, the 3-node partition can continue operating while the 2-node partition cannot accept writes. This prevents split-brain scenarios but reduces availability. Some systems implement techniques like witness nodes or dynamic quorums to improve availability, but the fundamental trade-off remains: you cannot have both consistency and availability during partitions.</p>
+<p><strong>Q: What are the safety and liveness properties that consensus algorithms must satisfy?</strong></p>
+<p>Safety properties ensure that "bad things never happen" - specifically, that all nodes agree on the same sequence of decisions and never reach conflicting conclusions. In Raft, this means the log matching property (identical logs up to any given index) and leader completeness (committed entries appear in all future leader logs). Liveness properties ensure that "good things eventually happen" - the system makes progress and doesn't get stuck forever. This includes leader election (eventually a leader is elected) and progress (client requests are eventually processed). The challenge is maintaining both properties under failures - safety must never be violated, while liveness might be temporarily compromised during failures but should be restored when conditions improve.</p>
+<p><strong>Q: How do you handle log compaction and snapshots in consensus algorithms?</strong></p>
+<p>Log compaction prevents logs from growing indefinitely by creating snapshots of the application state and discarding old log entries. In Raft, snapshots contain the committed application state up to a specific index, allowing nodes to discard log entries before that point. When a node falls far behind, the leader sends a snapshot instead of individual log entries. Challenges include: ensuring snapshots represent consistent state, handling nodes that are installing snapshots during normal operations, and coordinating snapshot creation across the cluster. The key is that snapshots must preserve safety properties - a node installing a snapshot must end up in the same state as if it had applied all the individual log entries.</p>
+<h2 id="consensus-algorithm-best-practices">Consensus Algorithm Best Practices<a class="headerlink" href="#consensus-algorithm-best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="choose-the-right-algorithm-for-your-needs">Choose the Right Algorithm for Your Needs<a class="headerlink" href="#choose-the-right-algorithm-for-your-needs" title="Permanent link">&para;</a></h3>
+<p>Select consensus algorithms based on your specific requirements. Use Raft for most practical applications due to its understandability and proven implementations. Consider Paxos variants for specialized scenarios requiring maximum theoretical efficiency. Evaluate Byzantine fault-tolerant algorithms only if you need protection against malicious nodes.</p>
+<h3 id="implement-proper-failure-detection">Implement Proper Failure Detection<a class="headerlink" href="#implement-proper-failure-detection" title="Permanent link">&para;</a></h3>
+<p>Design robust failure detection that balances responsiveness with stability. Use multiple indicators like heartbeat timeouts, network connectivity checks, and application-level health monitoring. Avoid overly sensitive failure detection that causes unnecessary leader elections during temporary network issues.</p>
+<h3 id="tune-timeouts-carefully">Tune Timeouts Carefully<a class="headerlink" href="#tune-timeouts-carefully" title="Permanent link">&para;</a></h3>
+<p>Configure election timeouts, heartbeat intervals, and other timing parameters based on your network characteristics and availability requirements. Use randomized timeouts to prevent split votes and consider adaptive timeout mechanisms that adjust based on observed network conditions.</p>
+<h3 id="plan-for-cluster-membership-changes">Plan for Cluster Membership Changes<a class="headerlink" href="#plan-for-cluster-membership-changes" title="Permanent link">&para;</a></h3>
+<p>Implement safe mechanisms for adding and removing nodes from the consensus group. Use joint consensus approaches that ensure safety during membership transitions, and consider the impact of membership changes on quorum requirements and performance.</p>
+<h3 id="monitor-consensus-health">Monitor Consensus Health<a class="headerlink" href="#monitor-consensus-health" title="Permanent link">&para;</a></h3>
+<p>Implement comprehensive monitoring for consensus metrics including election frequency, log replication lag, commit latency, and leadership stability. High election rates or replication lag often indicate network issues or configuration problems that need attention.</p>
+<h3 id="design-for-operational-simplicity">Design for Operational Simplicity<a class="headerlink" href="#design-for-operational-simplicity" title="Permanent link">&para;</a></h3>
+<p>Choose implementations and configurations that are operationally manageable. Prefer well-tested, widely-used implementations over custom solutions. Design clear procedures for common operational tasks like cluster recovery, node replacement, and configuration changes.</p>
+<p>Consensus algorithms are the foundation of consistency in distributed systems. While they involve complex theoretical concepts, understanding their practical applications and trade-offs is essential for building reliable distributed systems that can maintain consistency despite failures and network issues.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.sections", "navigation.tracking", "content.code.copy", "content.action.edit", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>

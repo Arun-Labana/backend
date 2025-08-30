@@ -1,0 +1,2305 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A 45-day learning plan covering essential backend concepts with beginner-friendly notes and Java examples.">
+      
+      
+      
+        <link rel="canonical" href="https://Arun-Labana.github.io/backend/21.%20API%20Gateway/">
+      
+      
+        <link rel="prev" href="../20.%20Event-driven%20Architecture/">
+      
+      
+        <link rel="next" href="../22.%20Circuit%20Breaker%20Pattern/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>21. API Gateway - 45 Days Backend Concepts</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#api-gateway" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="45 Days Backend Concepts" class="md-header__button md-logo" aria-label="45 Days Backend Concepts" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            45 Days Backend Concepts
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              21. API Gateway
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Arun-Labana/backend" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Arun-Labana/backend
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="45 Days Backend Concepts" class="md-nav__button md-logo" aria-label="45 Days Backend Concepts" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    45 Days Backend Concepts
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Arun-Labana/backend" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Arun-Labana/backend
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Days
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Days
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01.%20Connection%20Pooling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    01. Connection Pooling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02.%20Idempotency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    02. Idempotency
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03.%20Caching%20%28In-Memory%20vs%20Distributed%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    03. Caching (In-Memory vs Distributed)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04.%20Load%20Balancing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    04. Load Balancing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05.%20Rate%20Limiting%20%26%20Throttling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    05. Rate Limiting & Throttling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06.%20Horizontal%20vs%20Vertical%20Scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    06. Horizontal vs Vertical Scaling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07.%20Stateless%20vs%20Stateful%20Architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    07. Stateless vs Stateful Architecture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08.%20Transactions%20%28ACID%20properties%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    08. Transactions (ACID properties)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09.%20Indexes%20%28B-Tree%2C%20Hash%2C%20etc.%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    09. Indexes (B-Tree, Hash, etc.)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10.%20Joins%20%26%20Query%20Optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    10. Joins & Query Optimization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11.%20Normalization%20vs%20Denormalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    11. Normalization vs Denormalization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12.%20Sharding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    12. Sharding
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13.%20Replication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    13. Replication
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14.%20CAP%20Theorem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    14. CAP Theorem
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../15.%20REST%20APIs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    15. REST APIs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../16.%20GraphQL%20Basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    16. GraphQL Basics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../17.%20gRPC%20%26%20Protocol%20Buffers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    17. gRPC & Protocol Buffers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../18.%20WebSockets%20%28Realtime%20communication%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    18. WebSockets (Realtime communication)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../19.%20Message%20Queues%20%28RabbitMQ%2C%20Kafka%2C%20SQS%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    19. Message Queues (RabbitMQ, Kafka, SQS)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../20.%20Event-driven%20Architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    20. Event-driven Architecture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    21. API Gateway
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    21. API Gateway
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-an-api-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is an API Gateway?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-functions-of-an-api-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Functions of an API Gateway
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Functions of an API Gateway">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#request-routing-and-load-balancing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Request Routing and Load Balancing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication-and-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authentication and Authorization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rate-limiting-and-throttling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rate Limiting and Throttling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#request-and-response-transformation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Request and Response Transformation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-api-gateways-are-essential" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why API Gateways are Essential
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why API Gateways are Essential">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplifying-client-interactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simplifying Client Interactions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#centralized-cross-cutting-concerns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Centralized Cross-Cutting Concerns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enhanced-security-posture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enhanced Security Posture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#improved-observability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Improved Observability
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-gateway-patterns-and-architectures" class="md-nav__link">
+    <span class="md-ellipsis">
+      API Gateway Patterns and Architectures
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Gateway Patterns and Architectures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backend-for-frontend-bff-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backend for Frontend (BFF) Pattern
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#micro-gateway-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      Micro Gateway Pattern
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edge-gateway-vs-internal-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      Edge Gateway vs Internal Gateway
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Applications
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Applications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e-commerce-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      E-commerce Platform
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#financial-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      Financial Services
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#media-streaming-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Media Streaming Platform
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iot-and-smart-city-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      IoT and Smart City Applications
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simple-api-gateway-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simple API Gateway Implementation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-interview-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Interview Questions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-gateway-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      API Gateway Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Gateway Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#design-for-high-availability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design for High Availability
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implement-comprehensive-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implement Comprehensive Security
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-and-observe-everything" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor and Observe Everything
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimize-for-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Optimize for Performance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plan-for-evolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plan for Evolution
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../22.%20Circuit%20Breaker%20Pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    22. Circuit Breaker Pattern
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../23.%20Retry%20%26%20Backoff%20Strategies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    23. Retry & Backoff Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../24.%20Dead%20Letter%20Queues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    24. Dead Letter Queues
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../25.%20Distributed%20Locks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    25. Distributed Locks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../26.%20Leader%20Election/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    26. Leader Election
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../27.%20Consensus%20Algorithms%20%28Raft%2C%20Paxos%20basics%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    27. Consensus Algorithms (Raft, Paxos basics)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../28.%20Quorum%20in%20Databases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    28. Quorum in Databases
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../29.%20Authentication%20vs%20Authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    29. Authentication vs Authorization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../30.%20JWT%20%26%20OAuth2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    30. JWT & OAuth2
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../31.%20CSRF%20%26%20XSS%20Protection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    31. CSRF & XSS Protection
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../32.%20SQL%20Injection%20%26%20Prevention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    32. SQL Injection & Prevention
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../33.%20HTTPS%20%26%20TLS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    33. HTTPS & TLS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../34.%20CORS%20%28Cross-Origin%20Resource%20Sharing%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    34. CORS (Cross-Origin Resource Sharing)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../35.%20Hashing%20%26%20Password%20Storage%20%28bcrypt%2C%20Argon2%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    35. Hashing & Password Storage (bcrypt, Argon2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../36.%20Logging%20Strategies%20%28Structured%20Logging%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    36. Logging Strategies (Structured Logging)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../37.%20Metrics%20%26%20Monitoring%20%28Prometheus%2C%20Grafana%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    37. Metrics & Monitoring (Prometheus, Grafana)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../38.%20Tracing%20%28Distributed%20Tracing%2C%20OpenTelemetry%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    38. Tracing (Distributed Tracing, OpenTelemetry)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../39.%20Health%20Checks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    39. Health Checks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../40.%20Profiling%20%26%20Benchmarking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    40. Profiling & Benchmarking
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../41.%20Error%20Handling%20Patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    41. Error Handling Patterns
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../42.%20Blue-Green%20%26%20Canary%20Deployments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    42. Blue-Green & Canary Deployments
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../43.%20CQRS%20%28Command%20Query%20Responsibility%20Segregation%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    43. CQRS (Command Query Responsibility Segregation)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../44.%20Event%20Sourcing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    44. Event Sourcing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../45.%20Microservices%20vs%20Monoliths%20vs%20Serverless/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    45. Microservices vs Monoliths vs Serverless
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-an-api-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is an API Gateway?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-functions-of-an-api-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Functions of an API Gateway
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Functions of an API Gateway">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#request-routing-and-load-balancing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Request Routing and Load Balancing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication-and-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authentication and Authorization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rate-limiting-and-throttling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rate Limiting and Throttling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#request-and-response-transformation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Request and Response Transformation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-api-gateways-are-essential" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why API Gateways are Essential
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why API Gateways are Essential">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplifying-client-interactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simplifying Client Interactions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#centralized-cross-cutting-concerns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Centralized Cross-Cutting Concerns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enhanced-security-posture" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enhanced Security Posture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#improved-observability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Improved Observability
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-gateway-patterns-and-architectures" class="md-nav__link">
+    <span class="md-ellipsis">
+      API Gateway Patterns and Architectures
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Gateway Patterns and Architectures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backend-for-frontend-bff-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backend for Frontend (BFF) Pattern
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#micro-gateway-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      Micro Gateway Pattern
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edge-gateway-vs-internal-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      Edge Gateway vs Internal Gateway
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Applications
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Applications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e-commerce-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      E-commerce Platform
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#financial-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      Financial Services
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#media-streaming-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Media Streaming Platform
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iot-and-smart-city-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      IoT and Smart City Applications
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simple-api-gateway-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simple API Gateway Implementation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-interview-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Interview Questions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-gateway-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      API Gateway Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Gateway Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#design-for-high-availability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design for High Availability
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implement-comprehensive-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implement Comprehensive Security
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-and-observe-everything" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor and Observe Everything
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimize-for-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Optimize for Performance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plan-for-evolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plan for Evolution
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/Arun-Labana/backend/edit/master/docs/21. API Gateway/README.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="api-gateway">API Gateway<a class="headerlink" href="#api-gateway" title="Permanent link">&para;</a></h1>
+<h2 id="what-is-an-api-gateway">What is an API Gateway?<a class="headerlink" href="#what-is-an-api-gateway" title="Permanent link">&para;</a></h2>
+<p>An API Gateway is a central entry point that sits between client applications and a collection of backend services, acting as a reverse proxy that routes requests to appropriate services while providing cross-cutting functionality. Think of an API Gateway like the front desk of a large office building - when visitors arrive, they don't wander the halls looking for the right department. Instead, they check in at the front desk, where a receptionist directs them to the correct floor and office, handles security badges, and ensures they have proper authorization to access specific areas.</p>
+<p>In distributed systems and microservices architectures, an API Gateway serves as the single point of entry for all client requests. Instead of clients needing to know about multiple service endpoints, authentication mechanisms, and communication protocols, they interact with a single, well-defined interface. The gateway then handles the complexity of routing requests to the appropriate backend services, aggregating responses, and managing cross-cutting concerns that would otherwise need to be implemented in every service.</p>
+<h2 id="core-functions-of-an-api-gateway">Core Functions of an API Gateway<a class="headerlink" href="#core-functions-of-an-api-gateway" title="Permanent link">&para;</a></h2>
+<h3 id="request-routing-and-load-balancing">Request Routing and Load Balancing<a class="headerlink" href="#request-routing-and-load-balancing" title="Permanent link">&para;</a></h3>
+<p>The primary function of an API Gateway is intelligent request routing based on various criteria such as URL paths, HTTP methods, headers, or even request content. When a client makes a request to <code>/api/users/123</code>, the gateway knows to route this to the user service, while <code>/api/orders/456</code> gets routed to the order service. This routing can be static (based on configuration) or dynamic (based on service discovery).</p>
+<p>Beyond simple routing, API Gateways often include sophisticated load balancing capabilities that distribute requests across multiple instances of backend services. This load balancing can use various algorithms like round-robin, least connections, or weighted distribution based on service capacity and performance metrics.</p>
+<h3 id="authentication-and-authorization">Authentication and Authorization<a class="headerlink" href="#authentication-and-authorization" title="Permanent link">&para;</a></h3>
+<p>API Gateways centralize authentication and authorization logic, eliminating the need for each backend service to implement these complex security mechanisms independently. The gateway can validate API keys, JWT tokens, OAuth credentials, or integrate with external identity providers before allowing requests to reach backend services.</p>
+<p>This centralized approach ensures consistent security policies across all services and simplifies security management. Backend services can focus on their core business logic while trusting that all incoming requests have been properly authenticated and authorized by the gateway.</p>
+<h3 id="rate-limiting-and-throttling">Rate Limiting and Throttling<a class="headerlink" href="#rate-limiting-and-throttling" title="Permanent link">&para;</a></h3>
+<p>To protect backend services from abuse and ensure fair usage, API Gateways implement rate limiting and throttling mechanisms. These can be applied globally, per API key, per user, or even per specific endpoints. When clients exceed their allowed request rates, the gateway can reject requests with appropriate error responses before they reach backend services.</p>
+<p>This protection is crucial for maintaining system stability and preventing individual clients or services from overwhelming the entire system during traffic spikes or malicious attacks.</p>
+<h3 id="request-and-response-transformation">Request and Response Transformation<a class="headerlink" href="#request-and-response-transformation" title="Permanent link">&para;</a></h3>
+<p>API Gateways can modify requests and responses as they pass through, enabling protocol translation, data format conversion, and API versioning strategies. For example, the gateway might convert REST requests to GraphQL for newer services while maintaining backward compatibility for legacy clients, or transform request/response formats to match different service interfaces.</p>
+<p>This transformation capability allows backend services to evolve independently while maintaining stable client interfaces, and enables integration between services that use different data formats or communication protocols.</p>
+<h2 id="why-api-gateways-are-essential">Why API Gateways are Essential<a class="headerlink" href="#why-api-gateways-are-essential" title="Permanent link">&para;</a></h2>
+<h3 id="simplifying-client-interactions">Simplifying Client Interactions<a class="headerlink" href="#simplifying-client-interactions" title="Permanent link">&para;</a></h3>
+<p>Without an API Gateway, client applications must manage connections to multiple backend services, each potentially having different authentication mechanisms, error handling patterns, and communication protocols. This complexity makes client development more difficult and creates tight coupling between clients and backend services.</p>
+<p>An API Gateway presents a unified interface to clients, abstracting away the complexity of the underlying microservices architecture. Clients interact with a single, consistent API that handles routing, authentication, and error handling uniformly across all services.</p>
+<h3 id="centralized-cross-cutting-concerns">Centralized Cross-Cutting Concerns<a class="headerlink" href="#centralized-cross-cutting-concerns" title="Permanent link">&para;</a></h3>
+<p>Many functionality requirements span multiple services: logging, monitoring, caching, compression, and CORS handling. Without an API Gateway, each service would need to implement these features independently, leading to code duplication, inconsistent implementations, and increased maintenance overhead.</p>
+<p>By centralizing these cross-cutting concerns in the API Gateway, organizations can ensure consistent implementation, reduce development effort, and maintain better control over system-wide policies and behaviors.</p>
+<h3 id="enhanced-security-posture">Enhanced Security Posture<a class="headerlink" href="#enhanced-security-posture" title="Permanent link">&para;</a></h3>
+<p>API Gateways create a security perimeter around backend services, providing multiple layers of protection including DDoS protection, request validation, and malicious payload filtering. Backend services can run in private networks without direct internet exposure, with only the gateway accessible from external networks.</p>
+<p>This architecture reduces the attack surface and enables centralized security monitoring and threat detection. Security teams can focus their efforts on hardening and monitoring a single entry point rather than securing dozens of individual services.</p>
+<h3 id="improved-observability">Improved Observability<a class="headerlink" href="#improved-observability" title="Permanent link">&para;</a></h3>
+<p>Having all external traffic flow through a single point provides excellent visibility into system usage patterns, performance metrics, and potential issues. API Gateways can generate comprehensive logs, metrics, and traces for all requests, enabling better monitoring, debugging, and capacity planning.</p>
+<p>This centralized observability is particularly valuable for understanding how different clients use the system and identifying performance bottlenecks or unusual usage patterns that might indicate problems or security threats.</p>
+<h2 id="api-gateway-patterns-and-architectures">API Gateway Patterns and Architectures<a class="headerlink" href="#api-gateway-patterns-and-architectures" title="Permanent link">&para;</a></h2>
+<h3 id="backend-for-frontend-bff-pattern">Backend for Frontend (BFF) Pattern<a class="headerlink" href="#backend-for-frontend-bff-pattern" title="Permanent link">&para;</a></h3>
+<p>The BFF pattern involves creating specialized API Gateways for different types of clients. A mobile BFF might aggregate data differently than a web application BFF, optimizing for mobile constraints like limited bandwidth and battery life. Each BFF can provide client-specific APIs while sharing common backend services.</p>
+<p>This pattern allows teams to optimize the API experience for different client types without compromising backend service design or forcing all clients to use the same data formats and interaction patterns.</p>
+<h3 id="micro-gateway-pattern">Micro Gateway Pattern<a class="headerlink" href="#micro-gateway-pattern" title="Permanent link">&para;</a></h3>
+<p>Instead of a single, monolithic gateway, the micro gateway pattern deploys smaller, specialized gateways for different domains or service groups. For example, an e-commerce platform might have separate gateways for user management, product catalog, and order processing services.</p>
+<p>This approach reduces the risk of the gateway becoming a single point of failure and allows different teams to manage their own gateway policies and configurations independently.</p>
+<h3 id="edge-gateway-vs-internal-gateway">Edge Gateway vs Internal Gateway<a class="headerlink" href="#edge-gateway-vs-internal-gateway" title="Permanent link">&para;</a></h3>
+<p>Edge gateways handle external traffic from internet clients and focus on security, rate limiting, and external integration. Internal gateways manage service-to-service communication within the data center, emphasizing routing efficiency and internal service discovery.</p>
+<p>This layered approach provides appropriate security and functionality at different network boundaries while optimizing performance for different types of traffic.</p>
+<h2 id="real-world-applications">Real-World Applications<a class="headerlink" href="#real-world-applications" title="Permanent link">&para;</a></h2>
+<h3 id="e-commerce-platform">E-commerce Platform<a class="headerlink" href="#e-commerce-platform" title="Permanent link">&para;</a></h3>
+<p>A large e-commerce platform might use an API Gateway to unify access to dozens of microservices handling user accounts, product catalogs, inventory, pricing, recommendations, reviews, and order processing. The gateway provides a single API endpoint for mobile apps and web clients while routing requests to appropriate services based on the URL path and request context.</p>
+<p>For example, when a mobile app requests a product page, the gateway might aggregate data from the product service, pricing service, inventory service, and recommendation service into a single response optimized for mobile consumption. The same underlying services serve web clients through different aggregation patterns suited to desktop interfaces.</p>
+<h3 id="financial-services">Financial Services<a class="headerlink" href="#financial-services" title="Permanent link">&para;</a></h3>
+<p>Banks and financial institutions use API Gateways to provide secure access to banking services while maintaining strict regulatory compliance. The gateway handles customer authentication using multi-factor authentication, applies transaction limits and fraud detection rules, and ensures all communications are properly encrypted and logged.</p>
+<p>External partners and fintech companies can access banking services through well-defined APIs without needing direct access to core banking systems. The gateway provides rate limiting, monitoring, and detailed audit trails required for financial compliance.</p>
+<h3 id="media-streaming-platform">Media Streaming Platform<a class="headerlink" href="#media-streaming-platform" title="Permanent link">&para;</a></h3>
+<p>Streaming services use API Gateways to manage access to content catalogs, user profiles, viewing history, and recommendation engines. The gateway can implement geo-blocking policies, enforce subscription tiers, and route requests to appropriate content delivery networks based on user location.</p>
+<p>Different client applications (smart TVs, mobile apps, web browsers) receive content metadata in formats optimized for their specific capabilities and network conditions, all managed through gateway transformation and routing policies.</p>
+<h3 id="iot-and-smart-city-applications">IoT and Smart City Applications<a class="headerlink" href="#iot-and-smart-city-applications" title="Permanent link">&para;</a></h3>
+<p>Smart city platforms use API Gateways to manage thousands of IoT devices and sensors while providing controlled access to city data for citizens, businesses, and government services. The gateway handles device authentication, data aggregation from multiple sensor types, and rate limiting to prevent individual devices or applications from overwhelming the system.</p>
+<p>Emergency services might receive real-time priority access to traffic and security data, while citizens access aggregated, privacy-protected information through public APIs with different rate limits and data filters.</p>
+<h2 id="simple-api-gateway-implementation">Simple API Gateway Implementation<a class="headerlink" href="#simple-api-gateway-implementation" title="Permanent link">&para;</a></h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Simple API Gateway implementation using Flask</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">Response</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">deque</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># Configuration for backend services</span>
+<span class="n">SERVICES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;users&#39;</span><span class="p">:</span> <span class="s1">&#39;http://localhost:3001&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;orders&#39;</span><span class="p">:</span> <span class="s1">&#39;http://localhost:3002&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;products&#39;</span><span class="p">:</span> <span class="s1">&#39;http://localhost:3003&#39;</span>
+<span class="p">}</span>
+
+<span class="c1"># Simple rate limiting storage</span>
+<span class="n">rate_limits</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">deque</span><span class="p">())</span>
+<span class="n">RATE_LIMIT_WINDOW</span> <span class="o">=</span> <span class="mi">60</span>  <span class="c1"># 1 minute</span>
+<span class="n">RATE_LIMIT_MAX</span> <span class="o">=</span> <span class="mi">100</span>    <span class="c1"># 100 requests per minute</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">APIGateway</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_keys</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;client-123&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Mobile App&#39;</span><span class="p">,</span> <span class="s1">&#39;rate_limit&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">},</span>
+            <span class="s1">&#39;client-456&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Web App&#39;</span><span class="p">,</span> <span class="s1">&#39;rate_limit&#39;</span><span class="p">:</span> <span class="mi">500</span><span class="p">},</span>
+            <span class="s1">&#39;client-789&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Partner API&#39;</span><span class="p">,</span> <span class="s1">&#39;rate_limit&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">authenticate_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Simple API key authentication&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">api_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_keys</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_rate_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if request is within rate limits&quot;&quot;&quot;</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">client_requests</span> <span class="o">=</span> <span class="n">rate_limits</span><span class="p">[</span><span class="n">api_key</span><span class="p">]</span>
+
+        <span class="c1"># Remove old requests outside the window</span>
+        <span class="k">while</span> <span class="n">client_requests</span> <span class="ow">and</span> <span class="n">client_requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">now</span> <span class="o">-</span> <span class="n">RATE_LIMIT_WINDOW</span><span class="p">:</span>
+            <span class="n">client_requests</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+
+        <span class="c1"># Check if within limit</span>
+        <span class="n">client_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_keys</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">api_key</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">max_requests</span> <span class="o">=</span> <span class="n">client_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rate_limit&#39;</span><span class="p">,</span> <span class="n">RATE_LIMIT_MAX</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">client_requests</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">max_requests</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Add current request</span>
+        <span class="n">client_requests</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">route_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">service_name</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Route request to appropriate backend service&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">service_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SERVICES</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">404</span>
+
+        <span class="n">service_url</span> <span class="o">=</span> <span class="n">SERVICES</span><span class="p">[</span><span class="n">service_name</span><span class="p">]</span>
+        <span class="n">full_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">service_url</span><span class="si">}{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Forward request to backend service</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+                <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+                <span class="n">url</span><span class="o">=</span><span class="n">full_url</span><span class="p">,</span>
+                <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+                <span class="n">json</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">response</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">503</span>
+
+<span class="n">gateway</span> <span class="o">=</span> <span class="n">APIGateway</span><span class="p">()</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">before_request</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">before_request</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pre-process all requests&quot;&quot;&quot;</span>
+    <span class="c1"># Extract API key from header</span>
+    <span class="n">api_key</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;X-API-Key&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;API key required&#39;</span><span class="p">}),</span> <span class="mi">401</span>
+
+    <span class="c1"># Authenticate</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">gateway</span><span class="o">.</span><span class="n">authenticate_request</span><span class="p">(</span><span class="n">api_key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;Invalid API key&#39;</span><span class="p">}),</span> <span class="mi">401</span>
+
+    <span class="c1"># Rate limiting</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">gateway</span><span class="o">.</span><span class="n">check_rate_limit</span><span class="p">(</span><span class="n">api_key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;Rate limit exceeded&#39;</span><span class="p">}),</span> <span class="mi">429</span>
+
+    <span class="c1"># Store API key for use in route handlers</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">api_key</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/api/&lt;service&gt;/&lt;path:endpoint&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PUT&#39;</span><span class="p">,</span> <span class="s1">&#39;DELETE&#39;</span><span class="p">,</span> <span class="s1">&#39;PATCH&#39;</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">gateway_route</span><span class="p">(</span><span class="n">service</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main gateway routing function&quot;&quot;&quot;</span>
+    <span class="c1"># Prepare path for backend service</span>
+    <span class="n">backend_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">endpoint</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Prepare headers (remove gateway-specific headers)</span>
+    <span class="n">backend_headers</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> 
+                      <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">,</span> <span class="s1">&#39;x-api-key&#39;</span><span class="p">]}</span>
+
+    <span class="c1"># Get request data</span>
+    <span class="n">request_data</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PUT&#39;</span><span class="p">,</span> <span class="s1">&#39;PATCH&#39;</span><span class="p">]:</span>
+        <span class="n">request_data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
+
+    <span class="c1"># Route to backend service</span>
+    <span class="n">response</span><span class="p">,</span> <span class="n">status_code</span> <span class="o">=</span> <span class="n">gateway</span><span class="o">.</span><span class="n">route_request</span><span class="p">(</span>
+        <span class="n">service</span><span class="p">,</span> <span class="n">backend_path</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">backend_headers</span><span class="p">,</span> <span class="n">request_data</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">response</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Service </span><span class="si">{</span><span class="n">service</span><span class="si">}</span><span class="s1"> not found&#39;</span><span class="p">}),</span> <span class="mi">404</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="s1">&#39;Service unavailable&#39;</span><span class="p">}),</span> <span class="mi">503</span>
+
+    <span class="c1"># Return response from backend service</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()),</span> <span class="n">status_code</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status_code</span><span class="p">,</span> 
+                       <span class="n">content_type</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;content-type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">))</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/api/health&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">health_check</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gateway health check endpoint&quot;&quot;&quot;</span>
+    <span class="n">service_status</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">service_name</span><span class="p">,</span> <span class="n">service_url</span> <span class="ow">in</span> <span class="n">SERVICES</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">service_url</span><span class="si">}</span><span class="s2">/health&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+            <span class="n">service_status</span><span class="p">[</span><span class="n">service_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;healthy&#39;</span> <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span> <span class="k">else</span> <span class="s1">&#39;unhealthy&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;response_time&#39;</span><span class="p">:</span> <span class="n">response</span><span class="o">.</span><span class="n">elapsed</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+            <span class="p">}</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">service_status</span><span class="p">[</span><span class="n">service_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="s1">&#39;unreachable&#39;</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span>
+        <span class="s1">&#39;gateway&#39;</span><span class="p">:</span> <span class="s1">&#39;healthy&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span>
+        <span class="s1">&#39;services&#39;</span><span class="p">:</span> <span class="n">service_status</span>
+    <span class="p">})</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/api/stats&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">api_stats</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;API usage statistics&quot;&quot;&quot;</span>
+    <span class="n">stats</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">api_key</span><span class="p">,</span> <span class="n">requests_list</span> <span class="ow">in</span> <span class="n">rate_limits</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">client_info</span> <span class="o">=</span> <span class="n">gateway</span><span class="o">.</span><span class="n">api_keys</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">api_key</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">stats</span><span class="p">[</span><span class="n">api_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;client_name&#39;</span><span class="p">:</span> <span class="n">client_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;Unknown&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;requests_last_minute&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">requests_list</span><span class="p">),</span>
+            <span class="s1">&#39;rate_limit&#39;</span><span class="p">:</span> <span class="n">client_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rate_limit&#39;</span><span class="p">,</span> <span class="n">RATE_LIMIT_MAX</span><span class="p">)</span>
+        <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;API Gateway starting on port 8080&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Available services:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">SERVICES</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+
+<h2 id="common-interview-questions">Common Interview Questions<a class="headerlink" href="#common-interview-questions" title="Permanent link">&para;</a></h2>
+<p><strong>Q: What is an API Gateway and why is it important in microservices architecture?</strong></p>
+<p>An API Gateway is a central entry point that sits between clients and backend services, handling request routing, authentication, rate limiting, and other cross-cutting concerns. It's important in microservices because it simplifies client interactions (single endpoint instead of multiple service endpoints), centralizes security and monitoring, provides unified error handling, enables API versioning strategies, and reduces coupling between clients and services. Without a gateway, clients must manage complexity of multiple service endpoints, different authentication mechanisms, and service discovery.</p>
+<p><strong>Q: What are the main functions and responsibilities of an API Gateway?</strong></p>
+<p>Key functions include: request routing and load balancing (directing requests to appropriate services), authentication and authorization (validating credentials and permissions), rate limiting and throttling (protecting against abuse), request/response transformation (protocol translation, data format conversion), caching (improving performance), logging and monitoring (centralized observability), SSL termination, CORS handling, and API versioning. The gateway acts as a facade that handles infrastructure concerns so backend services can focus on business logic.</p>
+<p><strong>Q: What are the potential drawbacks of using an API Gateway?</strong></p>
+<p>Drawbacks include: single point of failure (if not properly designed for high availability), potential performance bottleneck (all traffic goes through gateway), increased latency (additional network hop), complexity in configuration and management, risk of the gateway becoming a monolith itself, debugging challenges (additional layer to troubleshoot), and vendor lock-in with commercial solutions. Mitigation strategies include horizontal scaling, health checks, proper monitoring, and designing stateless gateways.</p>
+<p><strong>Q: How do you handle API Gateway scalability and high availability?</strong></p>
+<p>Scalability approaches include: horizontal scaling (multiple gateway instances behind a load balancer), stateless design (no session storage in gateway), caching strategies (both at gateway and backend levels), connection pooling to backend services, and asynchronous processing where possible. High availability requires: multiple gateway instances across availability zones, health checks and automatic failover, circuit breakers for backend service failures, graceful degradation when services are unavailable, and proper monitoring with alerting.</p>
+<h2 id="api-gateway-best-practices">API Gateway Best Practices<a class="headerlink" href="#api-gateway-best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="design-for-high-availability">Design for High Availability<a class="headerlink" href="#design-for-high-availability" title="Permanent link">&para;</a></h3>
+<p>Deploy API Gateways in multiple availability zones with proper load balancing and health checks. Implement circuit breakers to handle backend service failures gracefully and ensure the gateway can continue operating even when some services are unavailable. Use stateless gateway designs that don't store session information locally.</p>
+<h3 id="implement-comprehensive-security">Implement Comprehensive Security<a class="headerlink" href="#implement-comprehensive-security" title="Permanent link">&para;</a></h3>
+<p>Apply multiple layers of security including input validation, SQL injection prevention, DDoS protection, and proper authentication/authorization. Use TLS for all communications, implement proper CORS policies, and regularly audit and rotate API keys and certificates. Consider implementing additional security measures like request signing for sensitive operations.</p>
+<h3 id="monitor-and-observe-everything">Monitor and Observe Everything<a class="headerlink" href="#monitor-and-observe-everything" title="Permanent link">&para;</a></h3>
+<p>Implement detailed logging, metrics collection, and distributed tracing for all requests passing through the gateway. Monitor not just gateway performance but also backend service health, response times, and error rates. Set up alerting for anomalous traffic patterns, high error rates, and performance degradation.</p>
+<h3 id="optimize-for-performance">Optimize for Performance<a class="headerlink" href="#optimize-for-performance" title="Permanent link">&para;</a></h3>
+<p>Use caching strategies effectively, implement connection pooling to backend services, and minimize request/response transformation overhead. Consider using asynchronous processing for non-critical operations and implement request batching where appropriate. Monitor and optimize gateway resource usage to prevent it from becoming a bottleneck.</p>
+<h3 id="plan-for-evolution">Plan for Evolution<a class="headerlink" href="#plan-for-evolution" title="Permanent link">&para;</a></h3>
+<p>Design APIs with versioning in mind, use backward-compatible changes when possible, and implement gradual rollout strategies for API changes. Document APIs thoroughly and provide clear migration paths when breaking changes are necessary. Consider using feature flags to enable controlled rollouts of new functionality.</p>
+<p>Understanding API Gateways is crucial for modern distributed system architecture. They provide essential infrastructure for managing the complexity of microservices while ensuring security, performance, and maintainability. When implemented well, API Gateways enable organizations to build scalable, secure, and maintainable distributed systems that can evolve over time.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.sections", "navigation.tracking", "content.code.copy", "content.action.edit", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>

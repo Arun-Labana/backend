@@ -1,0 +1,2304 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A 45-day learning plan covering essential backend concepts with beginner-friendly notes and Java examples.">
+      
+      
+      
+        <link rel="canonical" href="https://Arun-Labana.github.io/backend/23.%20Retry%20%26%20Backoff%20Strategies/">
+      
+      
+        <link rel="prev" href="../22.%20Circuit%20Breaker%20Pattern/">
+      
+      
+        <link rel="next" href="../24.%20Dead%20Letter%20Queues/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>23. Retry & Backoff Strategies - 45 Days Backend Concepts</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#retry-backoff-strategies" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="45 Days Backend Concepts" class="md-header__button md-logo" aria-label="45 Days Backend Concepts" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            45 Days Backend Concepts
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              23. Retry & Backoff Strategies
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Arun-Labana/backend" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Arun-Labana/backend
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="45 Days Backend Concepts" class="md-nav__button md-logo" aria-label="45 Days Backend Concepts" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    45 Days Backend Concepts
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Arun-Labana/backend" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Arun-Labana/backend
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Days
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Days
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01.%20Connection%20Pooling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    01. Connection Pooling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02.%20Idempotency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    02. Idempotency
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03.%20Caching%20%28In-Memory%20vs%20Distributed%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    03. Caching (In-Memory vs Distributed)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04.%20Load%20Balancing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    04. Load Balancing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05.%20Rate%20Limiting%20%26%20Throttling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    05. Rate Limiting & Throttling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06.%20Horizontal%20vs%20Vertical%20Scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    06. Horizontal vs Vertical Scaling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07.%20Stateless%20vs%20Stateful%20Architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    07. Stateless vs Stateful Architecture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08.%20Transactions%20%28ACID%20properties%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    08. Transactions (ACID properties)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09.%20Indexes%20%28B-Tree%2C%20Hash%2C%20etc.%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    09. Indexes (B-Tree, Hash, etc.)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10.%20Joins%20%26%20Query%20Optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    10. Joins & Query Optimization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11.%20Normalization%20vs%20Denormalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    11. Normalization vs Denormalization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12.%20Sharding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    12. Sharding
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13.%20Replication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    13. Replication
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14.%20CAP%20Theorem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    14. CAP Theorem
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../15.%20REST%20APIs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    15. REST APIs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../16.%20GraphQL%20Basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    16. GraphQL Basics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../17.%20gRPC%20%26%20Protocol%20Buffers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    17. gRPC & Protocol Buffers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../18.%20WebSockets%20%28Realtime%20communication%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    18. WebSockets (Realtime communication)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../19.%20Message%20Queues%20%28RabbitMQ%2C%20Kafka%2C%20SQS%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    19. Message Queues (RabbitMQ, Kafka, SQS)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../20.%20Event-driven%20Architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    20. Event-driven Architecture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../21.%20API%20Gateway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    21. API Gateway
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../22.%20Circuit%20Breaker%20Pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    22. Circuit Breaker Pattern
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    23. Retry & Backoff Strategies
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    23. Retry & Backoff Strategies
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-are-retry-and-backoff-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      What are Retry and Backoff Strategies?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-transient-vs-permanent-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding Transient vs Permanent Failures
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Understanding Transient vs Permanent Failures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#transient-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transient Failures
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#permanent-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permanent Failures
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#types-of-backoff-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Types of Backoff Strategies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Types of Backoff Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed-delay" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fixed Delay
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linear-backoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      Linear Backoff
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exponential-backoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exponential Backoff
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exponential-backoff-with-jitter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exponential Backoff with Jitter
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-retry-and-when-not-to-retry" class="md-nav__link">
+    <span class="md-ellipsis">
+      When to Retry and When Not to Retry
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="When to Retry and When Not to Retry">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#good-candidates-for-retries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Good Candidates for Retries
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#poor-candidates-for-retries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Poor Candidates for Retries
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Applications
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Applications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#payment-processing-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Payment Processing Systems
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloud-infrastructure-automation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cloud Infrastructure Automation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#microservices-communication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Microservices Communication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-pipeline-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Pipeline Processing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simple-retry-implementation-with-different-backoff-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simple Retry Implementation with Different Backoff Strategies
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-interview-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Interview Questions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#retry-strategy-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Retry Strategy Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Retry Strategy Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implement-proper-exception-classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implement Proper Exception Classification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-exponential-backoff-with-jitter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Exponential Backoff with Jitter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set-appropriate-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Set Appropriate Limits
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-retry-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor Retry Patterns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#combine-with-circuit-breakers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Combine with Circuit Breakers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implement-idempotency" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implement Idempotency
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../24.%20Dead%20Letter%20Queues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    24. Dead Letter Queues
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../25.%20Distributed%20Locks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    25. Distributed Locks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../26.%20Leader%20Election/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    26. Leader Election
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../27.%20Consensus%20Algorithms%20%28Raft%2C%20Paxos%20basics%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    27. Consensus Algorithms (Raft, Paxos basics)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../28.%20Quorum%20in%20Databases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    28. Quorum in Databases
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../29.%20Authentication%20vs%20Authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    29. Authentication vs Authorization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../30.%20JWT%20%26%20OAuth2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    30. JWT & OAuth2
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../31.%20CSRF%20%26%20XSS%20Protection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    31. CSRF & XSS Protection
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../32.%20SQL%20Injection%20%26%20Prevention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    32. SQL Injection & Prevention
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../33.%20HTTPS%20%26%20TLS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    33. HTTPS & TLS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../34.%20CORS%20%28Cross-Origin%20Resource%20Sharing%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    34. CORS (Cross-Origin Resource Sharing)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../35.%20Hashing%20%26%20Password%20Storage%20%28bcrypt%2C%20Argon2%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    35. Hashing & Password Storage (bcrypt, Argon2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../36.%20Logging%20Strategies%20%28Structured%20Logging%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    36. Logging Strategies (Structured Logging)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../37.%20Metrics%20%26%20Monitoring%20%28Prometheus%2C%20Grafana%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    37. Metrics & Monitoring (Prometheus, Grafana)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../38.%20Tracing%20%28Distributed%20Tracing%2C%20OpenTelemetry%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    38. Tracing (Distributed Tracing, OpenTelemetry)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../39.%20Health%20Checks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    39. Health Checks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../40.%20Profiling%20%26%20Benchmarking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    40. Profiling & Benchmarking
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../41.%20Error%20Handling%20Patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    41. Error Handling Patterns
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../42.%20Blue-Green%20%26%20Canary%20Deployments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    42. Blue-Green & Canary Deployments
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../43.%20CQRS%20%28Command%20Query%20Responsibility%20Segregation%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    43. CQRS (Command Query Responsibility Segregation)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../44.%20Event%20Sourcing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    44. Event Sourcing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../45.%20Microservices%20vs%20Monoliths%20vs%20Serverless/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    45. Microservices vs Monoliths vs Serverless
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-are-retry-and-backoff-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      What are Retry and Backoff Strategies?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-transient-vs-permanent-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding Transient vs Permanent Failures
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Understanding Transient vs Permanent Failures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#transient-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transient Failures
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#permanent-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permanent Failures
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#types-of-backoff-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Types of Backoff Strategies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Types of Backoff Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed-delay" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fixed Delay
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linear-backoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      Linear Backoff
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exponential-backoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exponential Backoff
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exponential-backoff-with-jitter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exponential Backoff with Jitter
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-retry-and-when-not-to-retry" class="md-nav__link">
+    <span class="md-ellipsis">
+      When to Retry and When Not to Retry
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="When to Retry and When Not to Retry">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#good-candidates-for-retries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Good Candidates for Retries
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#poor-candidates-for-retries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Poor Candidates for Retries
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Applications
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Applications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#payment-processing-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Payment Processing Systems
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloud-infrastructure-automation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cloud Infrastructure Automation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#microservices-communication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Microservices Communication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-pipeline-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Pipeline Processing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simple-retry-implementation-with-different-backoff-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simple Retry Implementation with Different Backoff Strategies
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-interview-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Interview Questions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#retry-strategy-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Retry Strategy Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Retry Strategy Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implement-proper-exception-classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implement Proper Exception Classification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-exponential-backoff-with-jitter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use Exponential Backoff with Jitter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set-appropriate-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Set Appropriate Limits
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-retry-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor Retry Patterns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#combine-with-circuit-breakers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Combine with Circuit Breakers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implement-idempotency" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implement Idempotency
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/Arun-Labana/backend/edit/master/docs/23. Retry & Backoff Strategies/README.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="retry-backoff-strategies">Retry &amp; Backoff Strategies<a class="headerlink" href="#retry-backoff-strategies" title="Permanent link">&para;</a></h1>
+<h2 id="what-are-retry-and-backoff-strategies">What are Retry and Backoff Strategies?<a class="headerlink" href="#what-are-retry-and-backoff-strategies" title="Permanent link">&para;</a></h2>
+<p>Retry and backoff strategies are fault tolerance techniques that handle transient failures in distributed systems by automatically retrying failed operations with intelligent timing mechanisms. Think of retry strategies like a polite person trying to call a busy friend - instead of giving up after the first busy signal, they wait a bit and try again, perhaps waiting a little longer between each attempt to avoid overwhelming their friend's phone. This approach increases the chances of success while being respectful of the recipient's capacity.</p>
+<p>In distributed systems, networks are unreliable, services can be temporarily overloaded, and infrastructure can experience momentary hiccups. Rather than immediately failing when these transient issues occur, retry strategies give operations multiple chances to succeed, while backoff strategies control the timing between retry attempts to avoid making problems worse by overwhelming already struggling services.</p>
+<h2 id="understanding-transient-vs-permanent-failures">Understanding Transient vs Permanent Failures<a class="headerlink" href="#understanding-transient-vs-permanent-failures" title="Permanent link">&para;</a></h2>
+<h3 id="transient-failures">Transient Failures<a class="headerlink" href="#transient-failures" title="Permanent link">&para;</a></h3>
+<p>Transient failures are temporary problems that are likely to resolve themselves within a reasonable timeframe. These include network timeouts due to temporary congestion, database connection pool exhaustion that resolves as connections are freed, service overload that decreases as traffic patterns change, temporary DNS resolution failures, or brief infrastructure maintenance windows.</p>
+<p>These failures are prime candidates for retry strategies because the underlying issue is temporary and the same operation is likely to succeed if attempted again after a short delay. The key characteristic of transient failures is that they don't indicate a fundamental problem with the request or system configuration.</p>
+<h3 id="permanent-failures">Permanent Failures<a class="headerlink" href="#permanent-failures" title="Permanent link">&para;</a></h3>
+<p>Permanent failures are persistent problems that won't be resolved by simply retrying the operation. These include authentication failures (wrong credentials), authorization failures (insufficient permissions), malformed requests (invalid data format), resource not found errors, and configuration problems. </p>
+<p>Retrying permanent failures is not only wasteful but can be harmful, as it consumes system resources without any possibility of success and may trigger rate limiting or abuse detection mechanisms. Good retry strategies must distinguish between transient and permanent failures to apply retries appropriately.</p>
+<h2 id="types-of-backoff-strategies">Types of Backoff Strategies<a class="headerlink" href="#types-of-backoff-strategies" title="Permanent link">&para;</a></h2>
+<h3 id="fixed-delay">Fixed Delay<a class="headerlink" href="#fixed-delay" title="Permanent link">&para;</a></h3>
+<p>Fixed delay strategies wait the same amount of time between each retry attempt. For example, retrying every 5 seconds regardless of how many attempts have been made. This approach is simple to implement and provides predictable behavior, making it easy to reason about system timing and resource usage.</p>
+<p>However, fixed delays can be problematic in distributed systems because they don't adapt to changing conditions. If many clients are using the same fixed delay, they may all retry simultaneously, creating periodic traffic spikes that can overwhelm recovering services.</p>
+<h3 id="linear-backoff">Linear Backoff<a class="headerlink" href="#linear-backoff" title="Permanent link">&para;</a></h3>
+<p>Linear backoff increases the delay by a fixed amount with each retry attempt. For example, waiting 1 second after the first failure, 2 seconds after the second, 3 seconds after the third, and so on. This approach provides progressively longer delays that give struggling services more time to recover while still maintaining reasonable response times for early retry attempts.</p>
+<p>Linear backoff helps spread out retry attempts over time, reducing the likelihood of synchronized retries from multiple clients. It provides a good balance between quick recovery from brief issues and patience for longer-term problems.</p>
+<h3 id="exponential-backoff">Exponential Backoff<a class="headerlink" href="#exponential-backoff" title="Permanent link">&para;</a></h3>
+<p>Exponential backoff doubles (or increases by another factor) the delay with each retry attempt. Starting with a base delay like 1 second, subsequent attempts might wait 2 seconds, then 4 seconds, then 8 seconds, and so on. This strategy quickly backs off from failing services, giving them substantial time to recover from serious issues.</p>
+<p>Exponential backoff is particularly effective for handling cascading failures and service overload situations where aggressive retrying could make problems worse. The rapidly increasing delays ensure that retry traffic decreases significantly as problems persist, allowing overwhelmed services to recover.</p>
+<h3 id="exponential-backoff-with-jitter">Exponential Backoff with Jitter<a class="headerlink" href="#exponential-backoff-with-jitter" title="Permanent link">&para;</a></h3>
+<p>Adding jitter (randomness) to exponential backoff prevents the "thundering herd" problem where many clients retry at exactly the same time. Instead of waiting exactly 4 seconds, a client might wait anywhere from 3 to 5 seconds, distributing retry attempts across time windows rather than concentrating them at specific moments.</p>
+<p>Jitter is crucial in large distributed systems where thousands of clients might all experience failures simultaneously. Without jitter, synchronized retries can create periodic traffic spikes that prevent services from recovering and can trigger additional cascading failures.</p>
+<h2 id="when-to-retry-and-when-not-to-retry">When to Retry and When Not to Retry<a class="headerlink" href="#when-to-retry-and-when-not-to-retry" title="Permanent link">&para;</a></h2>
+<h3 id="good-candidates-for-retries">Good Candidates for Retries<a class="headerlink" href="#good-candidates-for-retries" title="Permanent link">&para;</a></h3>
+<p>Operations that involve network communication, external service calls, or resource contention are good candidates for retry strategies. Database connection failures, HTTP requests that timeout, message queue publish operations, file system operations during high I/O periods, and cloud API calls that return temporary error responses can all benefit from retries.</p>
+<p>The key is identifying operations where temporary environmental conditions might cause failures that could succeed if attempted again under slightly different circumstances.</p>
+<h3 id="poor-candidates-for-retries">Poor Candidates for Retries<a class="headerlink" href="#poor-candidates-for-retries" title="Permanent link">&para;</a></h3>
+<p>Operations involving user authentication, data validation, business logic violations, or resource authorization should generally not be retried automatically. Invalid user credentials won't become valid through retrying, malformed JSON won't become well-formed, and insufficient account balances won't increase just because you retry a transaction.</p>
+<p>Retrying these types of operations wastes resources and can trigger security alerts or rate limiting mechanisms that interpret repeated failed attempts as potential attacks.</p>
+<h2 id="real-world-applications">Real-World Applications<a class="headerlink" href="#real-world-applications" title="Permanent link">&para;</a></h2>
+<h3 id="payment-processing-systems">Payment Processing Systems<a class="headerlink" href="#payment-processing-systems" title="Permanent link">&para;</a></h3>
+<p>Payment processing involves multiple external systems: banks, payment processors, fraud detection services, and compliance systems. Network issues or temporary service overloads can cause payment operations to fail even when the customer's payment method is valid and they have sufficient funds.</p>
+<p>Retry strategies with exponential backoff help ensure that legitimate payment attempts succeed despite temporary infrastructure issues. However, these systems must be careful to avoid double-charging customers by implementing idempotency mechanisms alongside retries, and they must distinguish between retryable failures (network timeouts) and non-retryable failures (insufficient funds).</p>
+<h3 id="cloud-infrastructure-automation">Cloud Infrastructure Automation<a class="headerlink" href="#cloud-infrastructure-automation" title="Permanent link">&para;</a></h3>
+<p>Infrastructure automation tools like Terraform or AWS CloudFormation frequently interact with cloud APIs that can experience temporary rate limiting, resource provisioning delays, or transient service issues. When creating complex infrastructure deployments involving dozens of resources, temporary failures in individual API calls can cause entire deployments to fail.</p>
+<p>Retry strategies with jitter help these tools handle temporary cloud service issues gracefully while avoiding overwhelming cloud APIs with synchronized retry traffic from multiple automation runs happening simultaneously across different organizations.</p>
+<h3 id="microservices-communication">Microservices Communication<a class="headerlink" href="#microservices-communication" title="Permanent link">&para;</a></h3>
+<p>In microservices architectures, services frequently call other services over networks that can experience temporary congestion, packet loss, or routing issues. Service dependencies create chains where temporary failures in one service can cause failures throughout the system if not handled properly.</p>
+<p>Intelligent retry strategies help maintain system resilience by automatically handling temporary network issues and service overload conditions. Combined with circuit breakers, retries help distinguish between temporary issues (worth retrying) and persistent problems (require circuit breaking).</p>
+<h3 id="data-pipeline-processing">Data Pipeline Processing<a class="headerlink" href="#data-pipeline-processing" title="Permanent link">&para;</a></h3>
+<p>Big data processing pipelines often involve external data sources, distributed storage systems, and processing frameworks that can experience temporary resource contention or infrastructure issues. ETL (Extract, Transform, Load) operations might fail due to temporary database locks, storage system maintenance, or cluster resource constraints.</p>
+<p>Retry strategies with appropriate backoff help ensure that data processing pipelines can handle temporary infrastructure issues without requiring manual intervention, while avoiding overwhelming already constrained systems with aggressive retry attempts.</p>
+<h2 id="simple-retry-implementation-with-different-backoff-strategies">Simple Retry Implementation with Different Backoff Strategies<a class="headerlink" href="#simple-retry-implementation-with-different-backoff-strategies" title="Permanent link">&para;</a></h2>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">wraps</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BackoffStrategy</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">FIXED</span> <span class="o">=</span> <span class="s2">&quot;fixed&quot;</span>
+    <span class="n">LINEAR</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span>
+    <span class="n">EXPONENTIAL</span> <span class="o">=</span> <span class="s2">&quot;exponential&quot;</span>
+    <span class="n">EXPONENTIAL_JITTER</span> <span class="o">=</span> <span class="s2">&quot;exponential_jitter&quot;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RetryableError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for errors that should be retried&quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NonRetryableError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for errors that should not be retried&quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RetryConfig</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+                 <span class="n">base_delay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+                 <span class="n">max_delay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">60.0</span><span class="p">,</span>
+                 <span class="n">backoff_strategy</span><span class="p">:</span> <span class="n">BackoffStrategy</span> <span class="o">=</span> <span class="n">BackoffStrategy</span><span class="o">.</span><span class="n">EXPONENTIAL_JITTER</span><span class="p">,</span>
+                 <span class="n">exponential_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
+                 <span class="n">jitter_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+                 <span class="n">retryable_exceptions</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="n">RetryableError</span><span class="p">,)):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_attempts</span> <span class="o">=</span> <span class="n">max_attempts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_delay</span> <span class="o">=</span> <span class="n">base_delay</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_delay</span> <span class="o">=</span> <span class="n">max_delay</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backoff_strategy</span> <span class="o">=</span> <span class="n">backoff_strategy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exponential_factor</span> <span class="o">=</span> <span class="n">exponential_factor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jitter_factor</span> <span class="o">=</span> <span class="n">jitter_factor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">retryable_exceptions</span> <span class="o">=</span> <span class="n">retryable_exceptions</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RetryHandler</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">RetryConfig</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attempt</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate delay based on backoff strategy&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">backoff_strategy</span> <span class="o">==</span> <span class="n">BackoffStrategy</span><span class="o">.</span><span class="n">FIXED</span><span class="p">:</span>
+            <span class="n">delay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">base_delay</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">backoff_strategy</span> <span class="o">==</span> <span class="n">BackoffStrategy</span><span class="o">.</span><span class="n">LINEAR</span><span class="p">:</span>
+            <span class="n">delay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">base_delay</span> <span class="o">*</span> <span class="n">attempt</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">backoff_strategy</span> <span class="o">==</span> <span class="n">BackoffStrategy</span><span class="o">.</span><span class="n">EXPONENTIAL</span><span class="p">:</span>
+            <span class="n">delay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">base_delay</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">exponential_factor</span> <span class="o">**</span> <span class="p">(</span><span class="n">attempt</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">backoff_strategy</span> <span class="o">==</span> <span class="n">BackoffStrategy</span><span class="o">.</span><span class="n">EXPONENTIAL_JITTER</span><span class="p">:</span>
+            <span class="n">base_delay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">base_delay</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">exponential_factor</span> <span class="o">**</span> <span class="p">(</span><span class="n">attempt</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">jitter</span> <span class="o">=</span> <span class="n">base_delay</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">jitter_factor</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">delay</span> <span class="o">=</span> <span class="n">base_delay</span> <span class="o">+</span> <span class="n">jitter</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">delay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">base_delay</span>
+
+        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">delay</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">max_delay</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_retryable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exception</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if exception should be retried&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exception</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">retryable_exceptions</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute_with_retry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute function with retry logic&quot;&quot;&quot;</span>
+        <span class="n">last_exception</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">max_attempts</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">attempt</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Operation succeeded on attempt </span><span class="si">{</span><span class="n">attempt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">result</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">last_exception</span> <span class="o">=</span> <span class="n">e</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_retryable</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Non-retryable error: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">e</span>
+
+                <span class="k">if</span> <span class="n">attempt</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">max_attempts</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;All </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">max_attempts</span><span class="si">}</span><span class="s2"> attempts failed&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">e</span>
+
+                <span class="n">delay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_delay</span><span class="p">(</span><span class="n">attempt</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Attempt </span><span class="si">{</span><span class="n">attempt</span><span class="si">}</span><span class="s2"> failed: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Retrying in </span><span class="si">{</span><span class="n">delay</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds...&quot;</span><span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="n">last_exception</span>
+
+<span class="c1"># Decorator for easy retry functionality</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">retry_on_failure</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">RetryConfig</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">retry_handler</span> <span class="o">=</span> <span class="n">RetryHandler</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">retry_handler</span><span class="o">.</span><span class="n">execute_with_retry</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">wrapper</span>
+    <span class="k">return</span> <span class="n">decorator</span>
+
+<span class="c1"># Example service that simulates various failure modes</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UnreliableService</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">failure_modes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;transient_network&#39;</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">call_count</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s1">&#39;overload&#39;</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">call_count</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s1">&#39;authentication&#39;</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>  <span class="c1"># Always fails</span>
+            <span class="s1">&#39;temporary_outage&#39;</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">call_count</span> <span class="o">&lt;</span> <span class="mi">4</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">call_api</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">failure_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;transient_network&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;API call #</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">call_count</span><span class="si">}</span><span class="s2"> with data: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">failure_mode</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">failure_modes</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">failure_modes</span><span class="p">[</span><span class="n">failure_mode</span><span class="p">]():</span>
+            <span class="k">if</span> <span class="n">failure_mode</span> <span class="o">==</span> <span class="s1">&#39;authentication&#39;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NonRetryableError</span><span class="p">(</span><span class="s2">&quot;Invalid API credentials&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">RetryableError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Temporary </span><span class="si">{</span><span class="n">failure_mode</span><span class="si">}</span><span class="s2"> error&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Success response for: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># Demo different retry strategies</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">demo_retry_strategies</span><span class="p">():</span>
+    <span class="n">service</span> <span class="o">=</span> <span class="n">UnreliableService</span><span class="p">()</span>
+
+    <span class="n">strategies</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">BackoffStrategy</span><span class="o">.</span><span class="n">FIXED</span><span class="p">,</span> <span class="s2">&quot;Fixed delay (1 second each attempt)&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">BackoffStrategy</span><span class="o">.</span><span class="n">LINEAR</span><span class="p">,</span> <span class="s2">&quot;Linear backoff (1s, 2s, 3s...)&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">BackoffStrategy</span><span class="o">.</span><span class="n">EXPONENTIAL</span><span class="p">,</span> <span class="s2">&quot;Exponential backoff (1s, 2s, 4s, 8s...)&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">BackoffStrategy</span><span class="o">.</span><span class="n">EXPONENTIAL_JITTER</span><span class="p">,</span> <span class="s2">&quot;Exponential with jitter&quot;</span><span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">strategy</span><span class="p">,</span> <span class="n">description</span> <span class="ow">in</span> <span class="n">strategies</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== </span><span class="si">{</span><span class="n">description</span><span class="si">}</span><span class="s2"> ===&quot;</span><span class="p">)</span>
+        <span class="n">service</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="n">config</span> <span class="o">=</span> <span class="n">RetryConfig</span><span class="p">(</span>
+            <span class="n">max_attempts</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+            <span class="n">base_delay</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+            <span class="n">backoff_strategy</span><span class="o">=</span><span class="n">strategy</span><span class="p">,</span>
+            <span class="n">retryable_exceptions</span><span class="o">=</span><span class="p">(</span><span class="n">RetryableError</span><span class="p">,)</span>
+        <span class="p">)</span>
+
+        <span class="n">retry_handler</span> <span class="o">=</span> <span class="n">RetryHandler</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">retry_handler</span><span class="o">.</span><span class="n">execute_with_retry</span><span class="p">(</span>
+                <span class="n">service</span><span class="o">.</span><span class="n">call_api</span><span class="p">,</span> 
+                <span class="s2">&quot;test_data&quot;</span><span class="p">,</span> 
+                <span class="s2">&quot;transient_network&quot;</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final result: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Operation failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Demo non-retryable error</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Non-retryable Error Example ===&quot;</span><span class="p">)</span>
+    <span class="n">service</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">RetryConfig</span><span class="p">(</span>
+        <span class="n">max_attempts</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">retryable_exceptions</span><span class="o">=</span><span class="p">(</span><span class="n">RetryableError</span><span class="p">,)</span>
+    <span class="p">)</span>
+
+    <span class="n">retry_handler</span> <span class="o">=</span> <span class="n">RetryHandler</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">retry_handler</span><span class="o">.</span><span class="n">execute_with_retry</span><span class="p">(</span>
+            <span class="n">service</span><span class="o">.</span><span class="n">call_api</span><span class="p">,</span>
+            <span class="s2">&quot;test_data&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;authentication&quot;</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Operation failed immediately: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Example using decorator</span>
+<span class="nd">@retry_on_failure</span><span class="p">(</span><span class="n">RetryConfig</span><span class="p">(</span>
+    <span class="n">max_attempts</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">backoff_strategy</span><span class="o">=</span><span class="n">BackoffStrategy</span><span class="o">.</span><span class="n">EXPONENTIAL_JITTER</span><span class="p">,</span>
+    <span class="n">retryable_exceptions</span><span class="o">=</span><span class="p">(</span><span class="n">RetryableError</span><span class="p">,)</span>
+<span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_user_data</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Example function that might fail transiently&quot;&quot;&quot;</span>
+    <span class="c1"># Simulate API call that might fail</span>
+    <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.7</span><span class="p">:</span>  <span class="c1"># 70% chance of failure</span>
+        <span class="k">raise</span> <span class="n">RetryableError</span><span class="p">(</span><span class="s2">&quot;Network timeout&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;User data for </span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">demo_retry_strategies</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Decorator Example ===&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">fetch_user_data</span><span class="p">(</span><span class="s2">&quot;user123&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Result: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h2 id="common-interview-questions">Common Interview Questions<a class="headerlink" href="#common-interview-questions" title="Permanent link">&para;</a></h2>
+<p><strong>Q: What are retry and backoff strategies and when should you use them?</strong></p>
+<p>Retry strategies automatically reattempt failed operations that might succeed if tried again, while backoff strategies control the timing between retry attempts. Use them for transient failures like network timeouts, temporary service overload, or resource contention, but not for permanent failures like authentication errors or malformed requests. They're essential in distributed systems where network issues and temporary service problems are common. The key is distinguishing between retryable (transient) and non-retryable (permanent) failures to avoid wasting resources.</p>
+<p><strong>Q: What are the different types of backoff strategies and their trade-offs?</strong></p>
+<p>Main strategies include: Fixed delay (same wait time, simple but can cause synchronized retries), Linear backoff (incrementally longer waits, good balance), Exponential backoff (rapidly increasing delays, good for serious issues), and Exponential with jitter (adds randomness to prevent thundering herd). Fixed is simplest but worst for distributed systems. Exponential with jitter is often best as it quickly backs off from persistent problems while preventing synchronized retry storms. The choice depends on failure patterns, system load, and acceptable latency.</p>
+<p><strong>Q: How do you prevent the "thundering herd" problem with retries?</strong></p>
+<p>Thundering herd occurs when many clients retry simultaneously, overwhelming recovering services. Prevention strategies include: adding jitter (randomness) to retry timings, using different backoff strategies across clients, implementing circuit breakers to stop retries when services are persistently failing, using queue-based retry systems that naturally spread load, and coordinating retries through central schedulers in some architectures. Jitter is the most common and effective solution - instead of waiting exactly 4 seconds, wait 3-5 seconds randomly.</p>
+<p><strong>Q: How do retries interact with other fault tolerance patterns like circuit breakers and timeouts?</strong></p>
+<p>These patterns work together: Timeouts detect slow operations and trigger retries for transient issues. Retries handle temporary failures but should stop for persistent problems. Circuit breakers monitor failure patterns and prevent retries when services are persistently failing. A typical flow: timeout detects slow response → retry with backoff for transient issues → circuit breaker opens after repeated failures → stop retries until circuit breaker allows testing → successful test closes circuit breaker and resumes normal retries. The patterns complement each other for comprehensive fault tolerance.</p>
+<h2 id="retry-strategy-best-practices">Retry Strategy Best Practices<a class="headerlink" href="#retry-strategy-best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="implement-proper-exception-classification">Implement Proper Exception Classification<a class="headerlink" href="#implement-proper-exception-classification" title="Permanent link">&para;</a></h3>
+<p>Clearly distinguish between retryable and non-retryable exceptions in your code. Create specific exception types or use error codes to categorize failures appropriately. Document which types of failures should be retried and ensure consistent handling across your application.</p>
+<h3 id="use-exponential-backoff-with-jitter">Use Exponential Backoff with Jitter<a class="headerlink" href="#use-exponential-backoff-with-jitter" title="Permanent link">&para;</a></h3>
+<p>For most distributed systems, exponential backoff with jitter provides the best balance of quick recovery and system protection. The exponential nature quickly reduces retry pressure on failing services, while jitter prevents synchronized retry storms from multiple clients.</p>
+<h3 id="set-appropriate-limits">Set Appropriate Limits<a class="headerlink" href="#set-appropriate-limits" title="Permanent link">&para;</a></h3>
+<p>Configure reasonable maximum retry attempts and maximum delay values to prevent retries from continuing indefinitely. Consider the user experience and business requirements when setting these limits - some operations need quick failure detection while others can tolerate longer retry periods.</p>
+<h3 id="monitor-retry-patterns">Monitor Retry Patterns<a class="headerlink" href="#monitor-retry-patterns" title="Permanent link">&para;</a></h3>
+<p>Implement comprehensive monitoring for retry attempts, success rates, and backoff timing. High retry rates often indicate systemic issues that need investigation. Track which types of failures are being retried and their eventual success rates to tune your retry strategies.</p>
+<h3 id="combine-with-circuit-breakers">Combine with Circuit Breakers<a class="headerlink" href="#combine-with-circuit-breakers" title="Permanent link">&para;</a></h3>
+<p>Use circuit breakers to stop retries when services are persistently failing. This prevents wasted resources and gives failing services time to recover without being overwhelmed by retry traffic. Circuit breakers and retries work together to provide comprehensive fault tolerance.</p>
+<h3 id="implement-idempotency">Implement Idempotency<a class="headerlink" href="#implement-idempotency" title="Permanent link">&para;</a></h3>
+<p>Ensure that operations being retried are idempotent - performing them multiple times has the same effect as performing them once. This prevents issues like duplicate payments or data corruption when retries succeed after apparent failures.</p>
+<p>Retry and backoff strategies are fundamental tools for building resilient distributed systems. When implemented thoughtfully with appropriate backoff strategies and proper failure classification, they significantly improve system reliability and user experience during temporary infrastructure issues.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.sections", "navigation.tracking", "content.code.copy", "content.action.edit", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2097 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A 45-day learning plan covering essential backend concepts with beginner-friendly notes and Java examples.">
+      
+      
+      
+        <link rel="canonical" href="https://Arun-Labana.github.io/backend/13.%20Replication/">
+      
+      
+        <link rel="prev" href="../12.%20Sharding/">
+      
+      
+        <link rel="next" href="../14.%20CAP%20Theorem/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>13. Replication - 45 Days Backend Concepts</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#replication" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="45 Days Backend Concepts" class="md-header__button md-logo" aria-label="45 Days Backend Concepts" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            45 Days Backend Concepts
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              13. Replication
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Arun-Labana/backend" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Arun-Labana/backend
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="45 Days Backend Concepts" class="md-nav__button md-logo" aria-label="45 Days Backend Concepts" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    45 Days Backend Concepts
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Arun-Labana/backend" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Arun-Labana/backend
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Days
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Days
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01.%20Connection%20Pooling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    01. Connection Pooling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02.%20Idempotency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    02. Idempotency
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03.%20Caching%20%28In-Memory%20vs%20Distributed%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    03. Caching (In-Memory vs Distributed)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04.%20Load%20Balancing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    04. Load Balancing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05.%20Rate%20Limiting%20%26%20Throttling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    05. Rate Limiting & Throttling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06.%20Horizontal%20vs%20Vertical%20Scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    06. Horizontal vs Vertical Scaling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07.%20Stateless%20vs%20Stateful%20Architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    07. Stateless vs Stateful Architecture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08.%20Transactions%20%28ACID%20properties%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    08. Transactions (ACID properties)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09.%20Indexes%20%28B-Tree%2C%20Hash%2C%20etc.%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    09. Indexes (B-Tree, Hash, etc.)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10.%20Joins%20%26%20Query%20Optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    10. Joins & Query Optimization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11.%20Normalization%20vs%20Denormalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    11. Normalization vs Denormalization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12.%20Sharding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    12. Sharding
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    13. Replication
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    13. Replication
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-database-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is Database Replication?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-is-replication-important" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why is Replication Important?
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why is Replication Important?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#high-availability-and-disaster-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      High Availability and Disaster Recovery
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#improved-read-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Improved Read Performance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geographic-distribution-and-latency-reduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Geographic Distribution and Latency Reduction
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#types-of-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Types of Replication
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Types of Replication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#master-slave-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Master-Slave Replication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#master-master-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Master-Master Replication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asynchronous-vs-synchronous-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Asynchronous vs Synchronous Replication
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e-commerce-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      E-commerce Platform
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#global-news-website" class="md-nav__link">
+    <span class="md-ellipsis">
+      Global News Website
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#financial-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      Financial Services
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#replication-lag" class="md-nav__link">
+    <span class="md-ellipsis">
+      Replication Lag
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#failover-and-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      Failover and Recovery
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-consistency" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Consistency
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simple-replication-setup-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simple Replication Setup Example
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-interview-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Interview Questions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#replication-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Replication Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Replication Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#monitor-replication-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor Replication Health
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design-for-split-brain-prevention" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design for Split-Brain Prevention
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plan-replica-placement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plan Replica Placement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimize-for-your-workload" class="md-nav__link">
+    <span class="md-ellipsis">
+      Optimize for Your Workload
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14.%20CAP%20Theorem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    14. CAP Theorem
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../15.%20REST%20APIs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    15. REST APIs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../16.%20GraphQL%20Basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    16. GraphQL Basics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../17.%20gRPC%20%26%20Protocol%20Buffers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    17. gRPC & Protocol Buffers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../18.%20WebSockets%20%28Realtime%20communication%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    18. WebSockets (Realtime communication)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../19.%20Message%20Queues%20%28RabbitMQ%2C%20Kafka%2C%20SQS%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    19. Message Queues (RabbitMQ, Kafka, SQS)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../20.%20Event-driven%20Architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    20. Event-driven Architecture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../21.%20API%20Gateway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    21. API Gateway
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../22.%20Circuit%20Breaker%20Pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    22. Circuit Breaker Pattern
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../23.%20Retry%20%26%20Backoff%20Strategies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    23. Retry & Backoff Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../24.%20Dead%20Letter%20Queues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    24. Dead Letter Queues
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../25.%20Distributed%20Locks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    25. Distributed Locks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../26.%20Leader%20Election/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    26. Leader Election
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../27.%20Consensus%20Algorithms%20%28Raft%2C%20Paxos%20basics%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    27. Consensus Algorithms (Raft, Paxos basics)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../28.%20Quorum%20in%20Databases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    28. Quorum in Databases
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../29.%20Authentication%20vs%20Authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    29. Authentication vs Authorization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../30.%20JWT%20%26%20OAuth2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    30. JWT & OAuth2
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../31.%20CSRF%20%26%20XSS%20Protection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    31. CSRF & XSS Protection
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../32.%20SQL%20Injection%20%26%20Prevention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    32. SQL Injection & Prevention
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../33.%20HTTPS%20%26%20TLS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    33. HTTPS & TLS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../34.%20CORS%20%28Cross-Origin%20Resource%20Sharing%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    34. CORS (Cross-Origin Resource Sharing)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../35.%20Hashing%20%26%20Password%20Storage%20%28bcrypt%2C%20Argon2%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    35. Hashing & Password Storage (bcrypt, Argon2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../36.%20Logging%20Strategies%20%28Structured%20Logging%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    36. Logging Strategies (Structured Logging)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../37.%20Metrics%20%26%20Monitoring%20%28Prometheus%2C%20Grafana%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    37. Metrics & Monitoring (Prometheus, Grafana)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../38.%20Tracing%20%28Distributed%20Tracing%2C%20OpenTelemetry%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    38. Tracing (Distributed Tracing, OpenTelemetry)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../39.%20Health%20Checks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    39. Health Checks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../40.%20Profiling%20%26%20Benchmarking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    40. Profiling & Benchmarking
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../41.%20Error%20Handling%20Patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    41. Error Handling Patterns
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../42.%20Blue-Green%20%26%20Canary%20Deployments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    42. Blue-Green & Canary Deployments
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../43.%20CQRS%20%28Command%20Query%20Responsibility%20Segregation%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    43. CQRS (Command Query Responsibility Segregation)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../44.%20Event%20Sourcing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    44. Event Sourcing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../45.%20Microservices%20vs%20Monoliths%20vs%20Serverless/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    45. Microservices vs Monoliths vs Serverless
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-database-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is Database Replication?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-is-replication-important" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why is Replication Important?
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why is Replication Important?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#high-availability-and-disaster-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      High Availability and Disaster Recovery
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#improved-read-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Improved Read Performance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geographic-distribution-and-latency-reduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      Geographic Distribution and Latency Reduction
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#types-of-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Types of Replication
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Types of Replication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#master-slave-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Master-Slave Replication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#master-master-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Master-Master Replication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asynchronous-vs-synchronous-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Asynchronous vs Synchronous Replication
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e-commerce-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      E-commerce Platform
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#global-news-website" class="md-nav__link">
+    <span class="md-ellipsis">
+      Global News Website
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#financial-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      Financial Services
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#replication-lag" class="md-nav__link">
+    <span class="md-ellipsis">
+      Replication Lag
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#failover-and-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      Failover and Recovery
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-consistency" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Consistency
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simple-replication-setup-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simple Replication Setup Example
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-interview-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Interview Questions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#replication-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Replication Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Replication Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#monitor-replication-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor Replication Health
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design-for-split-brain-prevention" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design for Split-Brain Prevention
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plan-replica-placement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plan Replica Placement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimize-for-your-workload" class="md-nav__link">
+    <span class="md-ellipsis">
+      Optimize for Your Workload
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/Arun-Labana/backend/edit/master/docs/13. Replication/README.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="replication">Replication<a class="headerlink" href="#replication" title="Permanent link">&para;</a></h1>
+<h2 id="what-is-database-replication">What is Database Replication?<a class="headerlink" href="#what-is-database-replication" title="Permanent link">&para;</a></h2>
+<p>Database replication is the process of creating and maintaining multiple copies of the same database across different servers or locations. Think of replication like having multiple copies of an important document stored in different safe deposit boxes - if one location becomes inaccessible, you can still retrieve your document from another location. In database terms, this means that if one database server fails, applications can continue operating by accessing the data from replica servers.</p>
+<p>Replication serves multiple purposes beyond just backup and disaster recovery. It can improve read performance by distributing query load across multiple servers, reduce latency by placing data closer to users in different geographic regions, and provide high availability by ensuring that database services remain accessible even when individual servers experience problems.</p>
+<h2 id="why-is-replication-important">Why is Replication Important?<a class="headerlink" href="#why-is-replication-important" title="Permanent link">&para;</a></h2>
+<h3 id="high-availability-and-disaster-recovery">High Availability and Disaster Recovery<a class="headerlink" href="#high-availability-and-disaster-recovery" title="Permanent link">&para;</a></h3>
+<p>The primary motivation for database replication is ensuring that your application remains available even when individual database servers fail. Hardware failures, network outages, software bugs, and natural disasters can all cause database servers to become unavailable. With replication, you have multiple copies of your data on different servers, so when one fails, your application can quickly switch to using a replica.</p>
+<p>Consider a critical business application like an online banking system. If the primary database server fails during business hours, customers would be unable to access their accounts, check balances, or make transactions. With proper replication, the system can automatically failover to a replica server within seconds, ensuring minimal disruption to banking services.</p>
+<h3 id="improved-read-performance">Improved Read Performance<a class="headerlink" href="#improved-read-performance" title="Permanent link">&para;</a></h3>
+<p>Replication can significantly improve read performance by allowing you to distribute read queries across multiple database servers. Instead of all read operations hitting a single primary server, they can be spread across multiple replicas, reducing the load on each individual server and improving overall system throughput.</p>
+<p>This is particularly beneficial for read-heavy applications like content management systems, news websites, or product catalogs where the vast majority of database operations are reads rather than writes. By routing read queries to replicas, you can handle much more read traffic without overwhelming your primary database server.</p>
+<h3 id="geographic-distribution-and-latency-reduction">Geographic Distribution and Latency Reduction<a class="headerlink" href="#geographic-distribution-and-latency-reduction" title="Permanent link">&para;</a></h3>
+<p>Replication enables you to place database copies in different geographic regions, reducing latency for users in those regions. A global application might have replicas in North America, Europe, and Asia, ensuring that users are served by the nearest database server for optimal performance.</p>
+<p>For example, a content delivery platform might replicate user preference data and content metadata to multiple regions. When a user in Tokyo accesses the platform, their request is served by the Asia-Pacific replica, providing much faster response times than if they had to reach across the ocean to a server in the United States.</p>
+<h2 id="types-of-replication">Types of Replication<a class="headerlink" href="#types-of-replication" title="Permanent link">&para;</a></h2>
+<h3 id="master-slave-replication">Master-Slave Replication<a class="headerlink" href="#master-slave-replication" title="Permanent link">&para;</a></h3>
+<p>Master-slave replication involves one primary (master) database server that handles all write operations, and one or more secondary (slave) servers that maintain copies of the master's data. All write operations must go through the master, which then propagates changes to the slave servers.</p>
+<p>This approach is simple to understand and implement, making it a popular choice for many applications. Read operations can be distributed across slaves to improve performance, while the master handles all writes to ensure data consistency. However, the master becomes a single point of failure for write operations, and there can be some delay (replication lag) between when data is written to the master and when it appears on slaves.</p>
+<p>In many master-slave setups, if the master fails, one of the slaves can be promoted to become the new master, though this process may require manual intervention or sophisticated automated failover systems.</p>
+<h3 id="master-master-replication">Master-Master Replication<a class="headerlink" href="#master-master-replication" title="Permanent link">&para;</a></h3>
+<p>Master-master replication allows multiple servers to accept both read and write operations, with changes from each server being replicated to all other servers. This approach eliminates the single point of failure for writes that exists in master-slave configurations and can provide better write performance by distributing write load across multiple servers.</p>
+<p>However, master-master replication introduces complexity around conflict resolution. If two users update the same record on different master servers simultaneously, the system needs a way to resolve these conflicts. Common approaches include "last writer wins," application-level conflict resolution, or automatic conflict detection and manual resolution.</p>
+<p>Master-master replication works well for applications where conflicts are rare or can be resolved automatically, but it requires careful design to handle edge cases and ensure data consistency.</p>
+<h3 id="asynchronous-vs-synchronous-replication">Asynchronous vs Synchronous Replication<a class="headerlink" href="#asynchronous-vs-synchronous-replication" title="Permanent link">&para;</a></h3>
+<p><strong>Asynchronous replication</strong> means that the primary server doesn't wait for replicas to confirm they've received updates before completing write operations. This provides better write performance since the primary can immediately respond to clients without waiting for network communication with replicas. However, there's a risk that recent changes might be lost if the primary fails before replicas receive the updates.</p>
+<p><strong>Synchronous replication</strong> requires the primary server to wait for confirmation from one or more replicas before completing write operations. This ensures that data is safely stored on multiple servers before confirming success to the client, providing stronger durability guarantees. The trade-off is increased write latency since every write operation must wait for network communication with replicas.</p>
+<p>Many systems offer configurable replication modes, allowing you to choose between performance and durability based on your application's specific requirements.</p>
+<h2 id="real-world-examples">Real-World Examples<a class="headerlink" href="#real-world-examples" title="Permanent link">&para;</a></h2>
+<h3 id="e-commerce-platform">E-commerce Platform<a class="headerlink" href="#e-commerce-platform" title="Permanent link">&para;</a></h3>
+<p>A large e-commerce platform might use master-slave replication with the master handling all inventory updates, order processing, and user account changes, while multiple slaves handle read operations like product searches, catalog browsing, and order history queries. This setup ensures that critical write operations maintain consistency while providing fast read performance for the majority of user interactions.</p>
+<p>During peak shopping periods like Black Friday, the read replicas help distribute the massive load of customers browsing products and checking prices, while the master focuses on processing actual purchases and inventory updates.</p>
+<h3 id="global-news-website">Global News Website<a class="headerlink" href="#global-news-website" title="Permanent link">&para;</a></h3>
+<p>A global news organization might implement geographic replication with database replicas in major regions. Article content, user comments, and personalization data are replicated to servers in North America, Europe, and Asia. When users access the website, they're served by the nearest replica, providing fast page load times regardless of their location.</p>
+<p>New articles published by journalists are written to the master database and then replicated to all geographic replicas, ensuring that breaking news appears quickly for users worldwide while maintaining low latency for content consumption.</p>
+<h3 id="financial-services">Financial Services<a class="headerlink" href="#financial-services" title="Permanent link">&para;</a></h3>
+<p>A financial institution might use synchronous replication for critical transaction data to ensure that no financial transactions are lost due to server failures. Account balances, transaction records, and audit logs are synchronously replicated to multiple servers before transactions are confirmed to customers.</p>
+<p>For less critical data like customer preferences or marketing information, they might use asynchronous replication to balance performance with durability requirements.</p>
+<h2 id="implementation-considerations">Implementation Considerations<a class="headerlink" href="#implementation-considerations" title="Permanent link">&para;</a></h2>
+<h3 id="replication-lag">Replication Lag<a class="headerlink" href="#replication-lag" title="Permanent link">&para;</a></h3>
+<p>One of the key challenges in replication is managing the delay between when data is written to the master and when it becomes available on replicas. This replication lag can cause issues when an application writes data to the master and then immediately tries to read it from a replica - the data might not be available yet.</p>
+<p>Applications need to account for this potential inconsistency, either by reading from the master for critical operations, implementing read-after-write consistency patterns, or designing the user experience to handle eventual consistency gracefully.</p>
+<h3 id="failover-and-recovery">Failover and Recovery<a class="headerlink" href="#failover-and-recovery" title="Permanent link">&para;</a></h3>
+<p>When a primary server fails, the system needs a way to promote a replica to become the new primary. This failover process can be manual (requiring human intervention) or automatic (using scripts or specialized software to detect failures and promote replicas).</p>
+<p>Automatic failover is faster but more complex to implement correctly. It requires sophisticated failure detection to avoid false positives (unnecessarily failing over a healthy server) and must handle split-brain scenarios where network partitions cause multiple servers to believe they should be the primary.</p>
+<h3 id="data-consistency">Data Consistency<a class="headerlink" href="#data-consistency" title="Permanent link">&para;</a></h3>
+<p>Maintaining consistency across replicas requires careful consideration of your application's requirements. Some applications can tolerate eventual consistency where replicas might temporarily show different values, while others require strong consistency where all replicas always show the same data.</p>
+<p>The choice affects both performance and complexity - stronger consistency typically requires more coordination between servers and can impact performance, while eventual consistency provides better performance but requires applications to handle temporary inconsistencies.</p>
+<h2 id="simple-replication-setup-example">Simple Replication Setup Example<a class="headerlink" href="#simple-replication-setup-example" title="Permanent link">&para;</a></h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Simplified database connection routing for master-slave setup</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseRouter</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">master</span> <span class="o">=</span> <span class="s2">&quot;master_db_connection&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slaves</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;slave1_db_connection&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;slave2_db_connection&quot;</span><span class="p">,</span> 
+            <span class="s2">&quot;slave3_db_connection&quot;</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_write_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># All writes go to master</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">master</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_read_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Distribute reads across slaves</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slaves</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+        <span class="n">connection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_write_connection</span><span class="p">()</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Executing write query on </span><span class="si">{</span><span class="n">connection</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+        <span class="n">connection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_read_connection</span><span class="p">()</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Executing read query on </span><span class="si">{</span><span class="n">connection</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="c1"># Usage example</span>
+<span class="n">db_router</span> <span class="o">=</span> <span class="n">DatabaseRouter</span><span class="p">()</span>
+
+<span class="c1"># Write operations go to master</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">db_router</span><span class="o">.</span><span class="n">execute_write</span><span class="p">(</span><span class="s2">&quot;INSERT INTO users VALUES (...)&quot;</span><span class="p">))</span>
+
+<span class="c1"># Read operations distributed across slaves  </span>
+<span class="nb">print</span><span class="p">(</span><span class="n">db_router</span><span class="o">.</span><span class="n">execute_read</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM users WHERE id = 123&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">db_router</span><span class="o">.</span><span class="n">execute_read</span><span class="p">(</span><span class="s2">&quot;SELECT * FROM products WHERE category = &#39;electronics&#39;&quot;</span><span class="p">))</span>
+</code></pre></div>
+
+<h2 id="common-interview-questions">Common Interview Questions<a class="headerlink" href="#common-interview-questions" title="Permanent link">&para;</a></h2>
+<p><strong>Q: What is database replication and why is it important?</strong></p>
+<p>Database replication is the process of maintaining multiple copies of the same database across different servers. It's important for high availability (ensuring service continues if one server fails), disaster recovery (protecting against data loss), improved read performance (distributing query load across multiple servers), and geographic distribution (reducing latency by placing data closer to users). Replication is essential for any system that needs to be highly available or serve users globally.</p>
+<p><strong>Q: What's the difference between master-slave and master-master replication?</strong></p>
+<p>Master-slave replication has one primary server handling all writes and one or more read-only replicas. It's simpler to manage but creates a single point of failure for writes. Master-master replication allows multiple servers to handle both reads and writes, eliminating the write bottleneck but introducing complexity around conflict resolution when the same data is modified on different servers simultaneously. Master-slave is more common and easier to implement, while master-master provides better availability but requires careful conflict handling.</p>
+<p><strong>Q: What are the trade-offs between synchronous and asynchronous replication?</strong></p>
+<p>Synchronous replication waits for replicas to confirm they've received updates before completing write operations, providing strong durability guarantees but increasing write latency. Asynchronous replication doesn't wait for replica confirmation, providing better write performance but risking data loss if the primary fails before replicas receive updates. The choice depends on whether your application prioritizes performance or data durability - financial systems often use synchronous replication while content systems might use asynchronous.</p>
+<p><strong>Q: How do you handle replication lag and ensure data consistency?</strong></p>
+<p>Handle replication lag through several strategies: read from master for critical read-after-write operations, implement session-based routing to ensure users read from the same replica, use timestamps or version numbers to detect stale data, design UIs to handle eventual consistency gracefully, or implement read preferences that specify maximum acceptable lag. For strong consistency needs, consider synchronous replication or techniques like read-your-writes consistency where critical reads are directed to the master.</p>
+<h2 id="replication-best-practices">Replication Best Practices<a class="headerlink" href="#replication-best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="monitor-replication-health">Monitor Replication Health<a class="headerlink" href="#monitor-replication-health" title="Permanent link">&para;</a></h3>
+<p>Implement comprehensive monitoring for replication lag, replica health, and failover capabilities. Track metrics like replication delay, replica connectivity, and data consistency across servers. Set up alerts for when replication lag exceeds acceptable thresholds or when replicas become disconnected.</p>
+<p>Regular testing of failover procedures ensures that your replication setup will work correctly during actual emergencies. Practice promoting replicas to master status and verify that applications can successfully redirect traffic to new primary servers.</p>
+<h3 id="design-for-split-brain-prevention">Design for Split-Brain Prevention<a class="headerlink" href="#design-for-split-brain-prevention" title="Permanent link">&para;</a></h3>
+<p>Split-brain scenarios occur when network partitions cause multiple servers to believe they're the primary, potentially leading to data conflicts. Implement proper quorum-based election systems, use external coordination services like ZooKeeper, or employ fencing mechanisms to prevent multiple masters from operating simultaneously.</p>
+<h3 id="plan-replica-placement">Plan Replica Placement<a class="headerlink" href="#plan-replica-placement" title="Permanent link">&para;</a></h3>
+<p>Carefully consider where to place replicas based on your users' geographic distribution, regulatory requirements, and disaster recovery needs. Avoid placing all replicas in the same data center or region, as this doesn't protect against regional outages or disasters.</p>
+<h3 id="optimize-for-your-workload">Optimize for Your Workload<a class="headerlink" href="#optimize-for-your-workload" title="Permanent link">&para;</a></h3>
+<p>Configure replication based on your specific read/write patterns and consistency requirements. Read-heavy applications benefit from more read replicas, while write-heavy applications should focus on optimizing primary server performance and minimizing replication overhead.</p>
+<p>Understanding database replication is crucial for designing systems that can scale to serve global users while maintaining high availability and performance. The choice of replication strategy should align with your specific requirements for consistency, performance, and operational complexity.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.sections", "navigation.tracking", "content.code.copy", "content.action.edit", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>

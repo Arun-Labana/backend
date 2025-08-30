@@ -1,0 +1,2107 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A 45-day learning plan covering essential backend concepts with beginner-friendly notes and Java examples.">
+      
+      
+      
+        <link rel="canonical" href="https://Arun-Labana.github.io/backend/03.%20Caching%20%28In-Memory%20vs%20Distributed%29/">
+      
+      
+        <link rel="prev" href="../02.%20Idempotency/">
+      
+      
+        <link rel="next" href="../04.%20Load%20Balancing/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>03. Caching (In-Memory vs Distributed) - 45 Days Backend Concepts</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#caching-in-memory-vs-distributed" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="45 Days Backend Concepts" class="md-header__button md-logo" aria-label="45 Days Backend Concepts" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            45 Days Backend Concepts
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              03. Caching (In-Memory vs Distributed)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Arun-Labana/backend" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Arun-Labana/backend
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="45 Days Backend Concepts" class="md-nav__button md-logo" aria-label="45 Days Backend Concepts" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    45 Days Backend Concepts
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Arun-Labana/backend" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Arun-Labana/backend
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Days
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Days
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01.%20Connection%20Pooling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    01. Connection Pooling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02.%20Idempotency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    02. Idempotency
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    03. Caching (In-Memory vs Distributed)
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    03. Caching (In-Memory vs Distributed)
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is Caching?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-is-caching-important" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why is Caching Important?
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why is Caching Important?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#performance-improvement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Improvement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resource-conservation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resource Conservation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scalability-enhancement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scalability Enhancement
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#in-memory-vs-distributed-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      In-Memory vs Distributed Caching
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="In-Memory vs Distributed Caching">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#in-memory-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      In-Memory Caching
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distributed-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      Distributed Caching
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Scenarios
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#social-media-feed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Social Media Feed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e-commerce-product-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      E-commerce Product Catalog
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simple-in-memory-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simple In-Memory Caching
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distributed-caching-with-redis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Distributed Caching with Redis
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-interview-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Interview Questions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caching-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Caching Strategies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Caching Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cache-aside-lazy-loading" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cache-Aside (Lazy Loading)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#write-through" class="md-nav__link">
+    <span class="md-ellipsis">
+      Write-Through
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#write-behind-write-back" class="md-nav__link">
+    <span class="md-ellipsis">
+      Write-Behind (Write-Back)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choose-appropriate-cache-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      Choose Appropriate Cache Keys
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set-reasonable-expiration-times" class="md-nav__link">
+    <span class="md-ellipsis">
+      Set Reasonable Expiration Times
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-cache-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor Cache Performance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plan-for-cache-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plan for Cache Failures
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04.%20Load%20Balancing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    04. Load Balancing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05.%20Rate%20Limiting%20%26%20Throttling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    05. Rate Limiting & Throttling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06.%20Horizontal%20vs%20Vertical%20Scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    06. Horizontal vs Vertical Scaling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07.%20Stateless%20vs%20Stateful%20Architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    07. Stateless vs Stateful Architecture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08.%20Transactions%20%28ACID%20properties%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    08. Transactions (ACID properties)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09.%20Indexes%20%28B-Tree%2C%20Hash%2C%20etc.%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    09. Indexes (B-Tree, Hash, etc.)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10.%20Joins%20%26%20Query%20Optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    10. Joins & Query Optimization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11.%20Normalization%20vs%20Denormalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    11. Normalization vs Denormalization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12.%20Sharding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    12. Sharding
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13.%20Replication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    13. Replication
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14.%20CAP%20Theorem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    14. CAP Theorem
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../15.%20REST%20APIs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    15. REST APIs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../16.%20GraphQL%20Basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    16. GraphQL Basics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../17.%20gRPC%20%26%20Protocol%20Buffers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    17. gRPC & Protocol Buffers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../18.%20WebSockets%20%28Realtime%20communication%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    18. WebSockets (Realtime communication)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../19.%20Message%20Queues%20%28RabbitMQ%2C%20Kafka%2C%20SQS%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    19. Message Queues (RabbitMQ, Kafka, SQS)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../20.%20Event-driven%20Architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    20. Event-driven Architecture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../21.%20API%20Gateway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    21. API Gateway
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../22.%20Circuit%20Breaker%20Pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    22. Circuit Breaker Pattern
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../23.%20Retry%20%26%20Backoff%20Strategies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    23. Retry & Backoff Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../24.%20Dead%20Letter%20Queues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    24. Dead Letter Queues
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../25.%20Distributed%20Locks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    25. Distributed Locks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../26.%20Leader%20Election/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    26. Leader Election
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../27.%20Consensus%20Algorithms%20%28Raft%2C%20Paxos%20basics%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    27. Consensus Algorithms (Raft, Paxos basics)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../28.%20Quorum%20in%20Databases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    28. Quorum in Databases
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../29.%20Authentication%20vs%20Authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    29. Authentication vs Authorization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../30.%20JWT%20%26%20OAuth2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    30. JWT & OAuth2
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../31.%20CSRF%20%26%20XSS%20Protection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    31. CSRF & XSS Protection
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../32.%20SQL%20Injection%20%26%20Prevention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    32. SQL Injection & Prevention
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../33.%20HTTPS%20%26%20TLS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    33. HTTPS & TLS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../34.%20CORS%20%28Cross-Origin%20Resource%20Sharing%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    34. CORS (Cross-Origin Resource Sharing)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../35.%20Hashing%20%26%20Password%20Storage%20%28bcrypt%2C%20Argon2%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    35. Hashing & Password Storage (bcrypt, Argon2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../36.%20Logging%20Strategies%20%28Structured%20Logging%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    36. Logging Strategies (Structured Logging)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../37.%20Metrics%20%26%20Monitoring%20%28Prometheus%2C%20Grafana%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    37. Metrics & Monitoring (Prometheus, Grafana)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../38.%20Tracing%20%28Distributed%20Tracing%2C%20OpenTelemetry%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    38. Tracing (Distributed Tracing, OpenTelemetry)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../39.%20Health%20Checks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    39. Health Checks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../40.%20Profiling%20%26%20Benchmarking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    40. Profiling & Benchmarking
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../41.%20Error%20Handling%20Patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    41. Error Handling Patterns
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../42.%20Blue-Green%20%26%20Canary%20Deployments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    42. Blue-Green & Canary Deployments
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../43.%20CQRS%20%28Command%20Query%20Responsibility%20Segregation%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    43. CQRS (Command Query Responsibility Segregation)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../44.%20Event%20Sourcing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    44. Event Sourcing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../45.%20Microservices%20vs%20Monoliths%20vs%20Serverless/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    45. Microservices vs Monoliths vs Serverless
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is Caching?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-is-caching-important" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why is Caching Important?
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why is Caching Important?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#performance-improvement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Improvement
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resource-conservation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resource Conservation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scalability-enhancement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scalability Enhancement
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#in-memory-vs-distributed-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      In-Memory vs Distributed Caching
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="In-Memory vs Distributed Caching">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#in-memory-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      In-Memory Caching
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distributed-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      Distributed Caching
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Scenarios
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#social-media-feed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Social Media Feed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e-commerce-product-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      E-commerce Product Catalog
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simple-in-memory-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simple In-Memory Caching
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distributed-caching-with-redis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Distributed Caching with Redis
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-interview-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Interview Questions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caching-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Caching Strategies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Caching Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cache-aside-lazy-loading" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cache-Aside (Lazy Loading)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#write-through" class="md-nav__link">
+    <span class="md-ellipsis">
+      Write-Through
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#write-behind-write-back" class="md-nav__link">
+    <span class="md-ellipsis">
+      Write-Behind (Write-Back)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choose-appropriate-cache-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      Choose Appropriate Cache Keys
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set-reasonable-expiration-times" class="md-nav__link">
+    <span class="md-ellipsis">
+      Set Reasonable Expiration Times
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-cache-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor Cache Performance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plan-for-cache-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plan for Cache Failures
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/Arun-Labana/backend/edit/master/docs/03. Caching (In-Memory vs Distributed)/README.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="caching-in-memory-vs-distributed">Caching (In-Memory vs Distributed)<a class="headerlink" href="#caching-in-memory-vs-distributed" title="Permanent link">&para;</a></h1>
+<h2 id="what-is-caching">What is Caching?<a class="headerlink" href="#what-is-caching" title="Permanent link">&para;</a></h2>
+<p>Caching is one of the most fundamental performance optimization techniques in backend development. At its core, caching involves storing frequently accessed data in a fast-access storage layer so that future requests for the same data can be served much more quickly. Think of caching like keeping your most-used books on your desk instead of walking to the library every time you need to reference them. The books on your desk represent cached data - easily accessible and immediately available when needed.</p>
+<p>In software systems, caching works by temporarily storing copies of data or computation results in locations that are faster to access than the original source. This could mean storing database query results in memory, keeping API responses in a local cache, or saving computed values to avoid recalculating them. The fundamental principle is simple: if you're likely to need the same data again soon, it's more efficient to keep a copy somewhere fast rather than regenerating or refetching it from the original source.</p>
+<h2 id="why-is-caching-important">Why is Caching Important?<a class="headerlink" href="#why-is-caching-important" title="Permanent link">&para;</a></h2>
+<h3 id="performance-improvement">Performance Improvement<a class="headerlink" href="#performance-improvement" title="Permanent link">&para;</a></h3>
+<p>The most obvious benefit of caching is dramatic performance improvement. Database queries that might take hundreds of milliseconds can be reduced to microseconds when served from memory cache. API calls to external services that take seconds can return instantly when cached. For user-facing applications, this translates directly to better user experience - pages load faster, interactions feel more responsive, and users are more likely to stay engaged with the application.</p>
+<p>Consider a news website that displays the same articles to thousands of readers. Without caching, each page view would require multiple database queries to fetch the article content, author information, comments, and related articles. With caching, the first visitor's request populates the cache, and subsequent visitors receive the pre-assembled page data instantly, reducing server load and improving response times dramatically.</p>
+<h3 id="resource-conservation">Resource Conservation<a class="headerlink" href="#resource-conservation" title="Permanent link">&para;</a></h3>
+<p>Caching also helps conserve computational and network resources. By serving repeated requests from cache instead of executing the same database queries or API calls repeatedly, you reduce the load on these expensive resources. This is particularly important for database servers, which can become bottlenecks as application traffic grows. External API calls often come with rate limits or costs per request, making caching not just a performance optimization but also a cost-saving measure.</p>
+<h3 id="scalability-enhancement">Scalability Enhancement<a class="headerlink" href="#scalability-enhancement" title="Permanent link">&para;</a></h3>
+<p>As applications grow and serve more users, caching becomes essential for maintaining performance at scale. Without caching, linear growth in users often leads to exponential growth in resource requirements. With proper caching strategies, you can serve many more users with the same infrastructure, making your application more scalable and cost-effective.</p>
+<h2 id="in-memory-vs-distributed-caching">In-Memory vs Distributed Caching<a class="headerlink" href="#in-memory-vs-distributed-caching" title="Permanent link">&para;</a></h2>
+<h3 id="in-memory-caching">In-Memory Caching<a class="headerlink" href="#in-memory-caching" title="Permanent link">&para;</a></h3>
+<p>In-memory caching stores data directly in the application server's RAM, making it the fastest possible access method. This type of caching is perfect for data that doesn't change frequently and can be safely lost when the application restarts. Examples include configuration data, reference tables, or computed values that are expensive to calculate but relatively static.</p>
+<p>The main advantage of in-memory caching is speed - accessing data from RAM is typically measured in nanoseconds. It's also simple to implement and doesn't require additional infrastructure. However, in-memory caches have significant limitations. The cached data is tied to a specific application instance, so in a multi-server environment, each server maintains its own cache. This can lead to inconsistency if the underlying data changes, and the cache is lost whenever the application restarts.</p>
+<h3 id="distributed-caching">Distributed Caching<a class="headerlink" href="#distributed-caching" title="Permanent link">&para;</a></h3>
+<p>Distributed caching uses external systems like Redis or Memcached to store cached data in a centralized location that multiple application servers can access. This approach provides consistency across multiple application instances and persistence beyond application restarts. Distributed caches can also be scaled independently of the application servers, allowing for larger cache sizes and better resource allocation.</p>
+<p>While distributed caching introduces some network latency compared to in-memory caching, it's still much faster than accessing primary data sources like databases. The trade-off between the slight performance cost and the benefits of consistency and persistence usually makes distributed caching the preferred choice for production applications, especially in microservices or multi-server environments.</p>
+<h2 id="real-world-scenarios">Real-World Scenarios<a class="headerlink" href="#real-world-scenarios" title="Permanent link">&para;</a></h2>
+<h3 id="social-media-feed">Social Media Feed<a class="headerlink" href="#social-media-feed" title="Permanent link">&para;</a></h3>
+<p>Consider how a social media platform handles user feeds. When you open your social media app, you expect to see posts from friends, sponsored content, and recommended posts instantly. Without caching, the system would need to query multiple databases, run recommendation algorithms, check privacy settings, and format the content for display - all in real-time. This could take several seconds.</p>
+<p>Instead, these platforms use sophisticated caching strategies. They pre-compute and cache popular content, user feed segments, and recommendation results. When you request your feed, the system assembles it from cached components, delivering it in milliseconds rather than seconds. They use distributed caching to ensure consistency across the global infrastructure and in-memory caching on edge servers for the fastest possible delivery.</p>
+<h3 id="e-commerce-product-catalog">E-commerce Product Catalog<a class="headerlink" href="#e-commerce-product-catalog" title="Permanent link">&para;</a></h3>
+<p>An e-commerce website might have millions of products, each with detailed descriptions, images, pricing, and inventory information. Popular products are viewed thousands of times per hour, while less popular items might be accessed infrequently. A pure database-driven approach would result in repeated expensive queries for the same product information.</p>
+<p>Instead, these systems implement multi-layered caching strategies. Popular product details are cached in memory on web servers for instant access. Less frequently accessed products might be cached in a distributed cache like Redis. Product images are cached on Content Delivery Networks (CDNs) for fast global delivery. Inventory levels, which change frequently, might use shorter cache expiration times or real-time invalidation strategies.</p>
+<h2 id="implementation-examples">Implementation Examples<a class="headerlink" href="#implementation-examples" title="Permanent link">&para;</a></h2>
+<h3 id="simple-in-memory-caching">Simple In-Memory Caching<a class="headerlink" href="#simple-in-memory-caching" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="nd">@Service</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ProductService</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Product</span><span class="o">&gt;</span><span class="w"> </span><span class="n">productCache</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ConcurrentHashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Product</span><span class="w"> </span><span class="nf">getProduct</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">productId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Check cache first</span>
+<span class="w">        </span><span class="n">Product</span><span class="w"> </span><span class="n">cached</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">productCache</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">productId</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cached</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">cached</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="c1">// Fetch from database if not cached</span>
+<span class="w">        </span><span class="n">Product</span><span class="w"> </span><span class="n">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">productRepository</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">productId</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">productCache</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">productId</span><span class="p">,</span><span class="w"> </span><span class="n">product</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">product</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="distributed-caching-with-redis">Distributed Caching with Redis<a class="headerlink" href="#distributed-caching-with-redis" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">redis</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UserService</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redis_client</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">6379</span><span class="p">,</span> <span class="n">decode_responses</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache_ttl</span> <span class="o">=</span> <span class="mi">3600</span>  <span class="c1"># 1 hour</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="c1"># Try cache first</span>
+        <span class="n">cache_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;user_profile:</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">cached_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">redis_client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cache_key</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cached_data</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">cached_data</span><span class="p">)</span>
+
+        <span class="c1"># Fetch from database</span>
+        <span class="n">user_profile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_user_from_database</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+
+        <span class="c1"># Store in cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redis_client</span><span class="o">.</span><span class="n">setex</span><span class="p">(</span>
+            <span class="n">cache_key</span><span class="p">,</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache_ttl</span><span class="p">,</span> 
+            <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">user_profile</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">user_profile</span>
+</code></pre></div>
+
+<h2 id="common-interview-questions">Common Interview Questions<a class="headerlink" href="#common-interview-questions" title="Permanent link">&para;</a></h2>
+<p><strong>Q: What is caching and why is it important in backend systems?</strong></p>
+<p>Caching is a technique that stores frequently accessed data in fast-access storage to improve application performance and reduce load on primary data sources. It's important because it dramatically reduces response times, conserves computational resources, and improves scalability. Without caching, applications would repeatedly perform expensive operations like database queries or external API calls, leading to poor performance and higher infrastructure costs. Caching is essential for any production system that needs to serve users efficiently at scale.</p>
+<p><strong>Q: What's the difference between in-memory and distributed caching?</strong></p>
+<p>In-memory caching stores data directly in the application server's RAM, providing the fastest possible access but limiting the cache to a single server instance. Distributed caching uses external systems like Redis to store cached data in a centralized location accessible by multiple servers. In-memory caching is faster but doesn't persist across application restarts and can cause consistency issues in multi-server environments. Distributed caching is slightly slower due to network overhead but provides consistency, persistence, and scalability across multiple application instances.</p>
+<p><strong>Q: When would you choose in-memory caching over distributed caching?</strong></p>
+<p>Choose in-memory caching when you need the absolute fastest access times and the data meets specific criteria: it's relatively static, not critical if lost during restarts, and doesn't need to be consistent across multiple servers. Examples include configuration data, reference tables, or computed values used by a single application instance. However, for most production applications, especially those running multiple instances, distributed caching is preferred for its consistency and reliability benefits.</p>
+<p><strong>Q: How do you handle cache invalidation?</strong></p>
+<p>Cache invalidation is one of the hardest problems in computer science. Common strategies include time-based expiration (TTL - Time To Live), where cached data expires after a set time; event-based invalidation, where cache entries are removed when the underlying data changes; and manual invalidation through administrative interfaces. The choice depends on your data consistency requirements and update patterns. For frequently changing data, shorter TTLs or event-based invalidation work best. For relatively static data, longer TTLs are more efficient.</p>
+<h2 id="caching-strategies">Caching Strategies<a class="headerlink" href="#caching-strategies" title="Permanent link">&para;</a></h2>
+<h3 id="cache-aside-lazy-loading">Cache-Aside (Lazy Loading)<a class="headerlink" href="#cache-aside-lazy-loading" title="Permanent link">&para;</a></h3>
+<p>In this pattern, the application code is responsible for managing the cache. When data is requested, the application first checks the cache. If the data is present (cache hit), it's returned immediately. If not (cache miss), the application fetches the data from the primary source, stores it in the cache, and then returns it. This strategy works well for read-heavy workloads and ensures that only actually requested data is cached.</p>
+<h3 id="write-through">Write-Through<a class="headerlink" href="#write-through" title="Permanent link">&para;</a></h3>
+<p>With write-through caching, data is written to both the cache and the primary data store simultaneously. This ensures that the cache is always up-to-date but can slow down write operations since they must complete in both locations. This strategy is good when you need strong consistency between the cache and the primary data store.</p>
+<h3 id="write-behind-write-back">Write-Behind (Write-Back)<a class="headerlink" href="#write-behind-write-back" title="Permanent link">&para;</a></h3>
+<p>In write-behind caching, data is written to the cache immediately but written to the primary data store asynchronously. This improves write performance but introduces the risk of data loss if the cache fails before the data is persisted to the primary store. This strategy is suitable for applications where write performance is critical and some data loss risk is acceptable.</p>
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="choose-appropriate-cache-keys">Choose Appropriate Cache Keys<a class="headerlink" href="#choose-appropriate-cache-keys" title="Permanent link">&para;</a></h3>
+<p>Design your cache keys carefully to avoid collisions and make debugging easier. Use descriptive prefixes and include version information when necessary. For example, use <code>user_profile:v2:12345</code> instead of just <code>12345</code>. This makes it easier to invalidate specific types of cached data and manage cache versions during application updates.</p>
+<h3 id="set-reasonable-expiration-times">Set Reasonable Expiration Times<a class="headerlink" href="#set-reasonable-expiration-times" title="Permanent link">&para;</a></h3>
+<p>Different types of data should have different cache expiration times based on how frequently they change and how critical freshness is. User profile data might be cached for hours, while real-time stock prices might only be cached for seconds. Monitor your cache hit rates and adjust expiration times to balance performance with data freshness requirements.</p>
+<h3 id="monitor-cache-performance">Monitor Cache Performance<a class="headerlink" href="#monitor-cache-performance" title="Permanent link">&para;</a></h3>
+<p>Implement monitoring for cache hit ratios, memory usage, and response times. A low cache hit ratio might indicate that your expiration times are too short or that your caching strategy isn't aligned with actual usage patterns. High memory usage might require adjusting cache size limits or implementing better eviction policies.</p>
+<h3 id="plan-for-cache-failures">Plan for Cache Failures<a class="headerlink" href="#plan-for-cache-failures" title="Permanent link">&para;</a></h3>
+<p>Always design your application to function when the cache is unavailable. Cache should be a performance optimization, not a dependency. Implement fallback mechanisms that fetch data from primary sources when cache operations fail, and consider using circuit breakers to temporarily bypass problematic cache instances.</p>
+<p>Caching is a powerful tool that can transform application performance, but it requires careful consideration of data patterns, consistency requirements, and operational complexity. When implemented thoughtfully, it becomes one of the most valuable optimizations in your backend architecture.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.sections", "navigation.tracking", "content.code.copy", "content.action.edit", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2128 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A 45-day learning plan covering essential backend concepts with beginner-friendly notes and Java examples.">
+      
+      
+      
+        <link rel="canonical" href="https://Arun-Labana.github.io/backend/12.%20Sharding/">
+      
+      
+        <link rel="prev" href="../11.%20Normalization%20vs%20Denormalization/">
+      
+      
+        <link rel="next" href="../13.%20Replication/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>12. Sharding - 45 Days Backend Concepts</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sharding" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="45 Days Backend Concepts" class="md-header__button md-logo" aria-label="45 Days Backend Concepts" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            45 Days Backend Concepts
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              12. Sharding
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Arun-Labana/backend" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Arun-Labana/backend
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="45 Days Backend Concepts" class="md-nav__button md-logo" aria-label="45 Days Backend Concepts" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    45 Days Backend Concepts
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Arun-Labana/backend" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Arun-Labana/backend
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Days
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Days
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01.%20Connection%20Pooling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    01. Connection Pooling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02.%20Idempotency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    02. Idempotency
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03.%20Caching%20%28In-Memory%20vs%20Distributed%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    03. Caching (In-Memory vs Distributed)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04.%20Load%20Balancing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    04. Load Balancing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05.%20Rate%20Limiting%20%26%20Throttling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    05. Rate Limiting & Throttling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06.%20Horizontal%20vs%20Vertical%20Scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    06. Horizontal vs Vertical Scaling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07.%20Stateless%20vs%20Stateful%20Architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    07. Stateless vs Stateful Architecture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08.%20Transactions%20%28ACID%20properties%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    08. Transactions (ACID properties)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09.%20Indexes%20%28B-Tree%2C%20Hash%2C%20etc.%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    09. Indexes (B-Tree, Hash, etc.)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10.%20Joins%20%26%20Query%20Optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    10. Joins & Query Optimization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11.%20Normalization%20vs%20Denormalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    11. Normalization vs Denormalization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    12. Sharding
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    12. Sharding
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-database-sharding" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is Database Sharding?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-is-sharding-important" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why is Sharding Important?
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why is Sharding Important?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breaking-through-single-server-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Breaking Through Single-Server Limitations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#improved-performance-and-scalability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Improved Performance and Scalability
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geographic-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Geographic Distribution
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharding-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sharding Strategies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sharding Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#range-based-sharding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Range-Based Sharding
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hash-based-sharding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hash-Based Sharding
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#directory-based-sharding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Directory-Based Sharding
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geographictenant-based-sharding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Geographic/Tenant-Based Sharding
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#social-media-user-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Social Media User Data
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e-commerce-order-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      E-commerce Order Management
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gaming-platforms" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gaming Platforms
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cross-shard-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cross-Shard Queries
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shard-rebalancing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Shard Rebalancing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-consistency" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Consistency
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simple-sharding-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simple Sharding Example
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-interview-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Interview Questions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharding-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sharding Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sharding Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choose-the-right-shard-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      Choose the Right Shard Key
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plan-for-growth" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plan for Growth
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-shard-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor Shard Health
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design-for-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design for Failure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keep-transactions-within-shards" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keep Transactions Within Shards
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13.%20Replication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    13. Replication
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14.%20CAP%20Theorem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    14. CAP Theorem
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../15.%20REST%20APIs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    15. REST APIs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../16.%20GraphQL%20Basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    16. GraphQL Basics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../17.%20gRPC%20%26%20Protocol%20Buffers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    17. gRPC & Protocol Buffers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../18.%20WebSockets%20%28Realtime%20communication%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    18. WebSockets (Realtime communication)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../19.%20Message%20Queues%20%28RabbitMQ%2C%20Kafka%2C%20SQS%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    19. Message Queues (RabbitMQ, Kafka, SQS)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../20.%20Event-driven%20Architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    20. Event-driven Architecture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../21.%20API%20Gateway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    21. API Gateway
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../22.%20Circuit%20Breaker%20Pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    22. Circuit Breaker Pattern
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../23.%20Retry%20%26%20Backoff%20Strategies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    23. Retry & Backoff Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../24.%20Dead%20Letter%20Queues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    24. Dead Letter Queues
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../25.%20Distributed%20Locks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    25. Distributed Locks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../26.%20Leader%20Election/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    26. Leader Election
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../27.%20Consensus%20Algorithms%20%28Raft%2C%20Paxos%20basics%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    27. Consensus Algorithms (Raft, Paxos basics)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../28.%20Quorum%20in%20Databases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    28. Quorum in Databases
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../29.%20Authentication%20vs%20Authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    29. Authentication vs Authorization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../30.%20JWT%20%26%20OAuth2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    30. JWT & OAuth2
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../31.%20CSRF%20%26%20XSS%20Protection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    31. CSRF & XSS Protection
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../32.%20SQL%20Injection%20%26%20Prevention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    32. SQL Injection & Prevention
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../33.%20HTTPS%20%26%20TLS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    33. HTTPS & TLS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../34.%20CORS%20%28Cross-Origin%20Resource%20Sharing%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    34. CORS (Cross-Origin Resource Sharing)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../35.%20Hashing%20%26%20Password%20Storage%20%28bcrypt%2C%20Argon2%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    35. Hashing & Password Storage (bcrypt, Argon2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../36.%20Logging%20Strategies%20%28Structured%20Logging%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    36. Logging Strategies (Structured Logging)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../37.%20Metrics%20%26%20Monitoring%20%28Prometheus%2C%20Grafana%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    37. Metrics & Monitoring (Prometheus, Grafana)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../38.%20Tracing%20%28Distributed%20Tracing%2C%20OpenTelemetry%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    38. Tracing (Distributed Tracing, OpenTelemetry)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../39.%20Health%20Checks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    39. Health Checks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../40.%20Profiling%20%26%20Benchmarking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    40. Profiling & Benchmarking
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../41.%20Error%20Handling%20Patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    41. Error Handling Patterns
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../42.%20Blue-Green%20%26%20Canary%20Deployments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    42. Blue-Green & Canary Deployments
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../43.%20CQRS%20%28Command%20Query%20Responsibility%20Segregation%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    43. CQRS (Command Query Responsibility Segregation)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../44.%20Event%20Sourcing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    44. Event Sourcing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../45.%20Microservices%20vs%20Monoliths%20vs%20Serverless/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    45. Microservices vs Monoliths vs Serverless
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-database-sharding" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is Database Sharding?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-is-sharding-important" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why is Sharding Important?
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why is Sharding Important?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breaking-through-single-server-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Breaking Through Single-Server Limitations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#improved-performance-and-scalability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Improved Performance and Scalability
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geographic-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Geographic Distribution
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharding-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sharding Strategies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sharding Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#range-based-sharding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Range-Based Sharding
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hash-based-sharding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hash-Based Sharding
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#directory-based-sharding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Directory-Based Sharding
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geographictenant-based-sharding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Geographic/Tenant-Based Sharding
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#social-media-user-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Social Media User Data
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e-commerce-order-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      E-commerce Order Management
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gaming-platforms" class="md-nav__link">
+    <span class="md-ellipsis">
+      Gaming Platforms
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation Considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cross-shard-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cross-Shard Queries
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shard-rebalancing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Shard Rebalancing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-consistency" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Consistency
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simple-sharding-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simple Sharding Example
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-interview-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Interview Questions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sharding-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sharding Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sharding Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choose-the-right-shard-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      Choose the Right Shard Key
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plan-for-growth" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plan for Growth
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-shard-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor Shard Health
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design-for-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Design for Failure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keep-transactions-within-shards" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keep Transactions Within Shards
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/Arun-Labana/backend/edit/master/docs/12. Sharding/README.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="sharding">Sharding<a class="headerlink" href="#sharding" title="Permanent link">&para;</a></h1>
+<h2 id="what-is-database-sharding">What is Database Sharding?<a class="headerlink" href="#what-is-database-sharding" title="Permanent link">&para;</a></h2>
+<p>Database sharding is a method of horizontal partitioning where you split a large database into smaller, more manageable pieces called "shards," with each shard stored on a separate database server. Think of sharding like dividing a massive library into multiple smaller libraries based on some logical criteria - perhaps one library holds books A-F, another holds G-M, and a third holds N-Z. Each library (shard) is independent and contains a subset of the total collection, but together they form the complete system.</p>
+<p>Unlike traditional scaling approaches that involve upgrading to more powerful hardware (vertical scaling), sharding allows you to distribute your data across multiple smaller servers (horizontal scaling). This approach becomes essential when your database grows beyond what a single server can handle efficiently, whether due to storage limitations, query performance issues, or the need to serve users across different geographic regions.</p>
+<h2 id="why-is-sharding-important">Why is Sharding Important?<a class="headerlink" href="#why-is-sharding-important" title="Permanent link">&para;</a></h2>
+<h3 id="breaking-through-single-server-limitations">Breaking Through Single-Server Limitations<a class="headerlink" href="#breaking-through-single-server-limitations" title="Permanent link">&para;</a></h3>
+<p>Every database server has physical limits - maximum storage capacity, CPU processing power, memory, and network throughput. As your application grows and accumulates more data and users, you'll eventually hit these limits. Sharding allows you to overcome these constraints by distributing the load across multiple servers, each handling a portion of your data and traffic.</p>
+<p>Consider a social media platform with hundreds of millions of users. Storing all user profiles, posts, and interactions in a single database would eventually become impossible due to storage constraints and would perform poorly due to the sheer volume of concurrent queries. Sharding allows the platform to distribute users across multiple database servers, ensuring that each server handles a manageable portion of the total workload.</p>
+<h3 id="improved-performance-and-scalability">Improved Performance and Scalability<a class="headerlink" href="#improved-performance-and-scalability" title="Permanent link">&para;</a></h3>
+<p>Sharding can dramatically improve both read and write performance by distributing database operations across multiple servers. Instead of all queries hitting a single database, they're spread across multiple shards, reducing the load on each individual server. This distribution allows for better resource utilization and can significantly reduce query response times.</p>
+<p>The scalability benefits are particularly compelling because you can continue adding shards as your data and traffic grow. This makes sharding an effective long-term solution for applications that expect significant growth over time.</p>
+<h3 id="geographic-distribution">Geographic Distribution<a class="headerlink" href="#geographic-distribution" title="Permanent link">&para;</a></h3>
+<p>Sharding enables you to place data closer to your users by locating shards in different geographic regions. A global application might have shards in North America, Europe, and Asia, ensuring that users are served from the nearest data center. This geographic distribution reduces latency and improves user experience while also providing natural disaster recovery capabilities.</p>
+<h2 id="sharding-strategies">Sharding Strategies<a class="headerlink" href="#sharding-strategies" title="Permanent link">&para;</a></h2>
+<h3 id="range-based-sharding">Range-Based Sharding<a class="headerlink" href="#range-based-sharding" title="Permanent link">&para;</a></h3>
+<p>Range-based sharding divides data based on ranges of a specific column value, such as dates, alphabetical ranges, or numeric ranges. For example, you might store users with last names A-F in one shard, G-M in another, and N-Z in a third shard. This approach is intuitive and makes it easy to determine which shard contains specific data.</p>
+<p>However, range-based sharding can lead to uneven data distribution if the ranges don't align with your actual data patterns. If you have many more users with last names starting with S than with X, the shard containing S names will be much larger and handle more traffic than the others.</p>
+<h3 id="hash-based-sharding">Hash-Based Sharding<a class="headerlink" href="#hash-based-sharding" title="Permanent link">&para;</a></h3>
+<p>Hash-based sharding uses a hash function to determine which shard should store each record. Typically, you apply a hash function to a key field (like user ID) and use the result to determine the target shard. For example, you might use <code>hash(user_id) % number_of_shards</code> to distribute users evenly across available shards.</p>
+<p>This approach tends to distribute data more evenly than range-based sharding because hash functions are designed to produce uniform distributions. However, it makes range queries more difficult since related data might end up on different shards.</p>
+<h3 id="directory-based-sharding">Directory-Based Sharding<a class="headerlink" href="#directory-based-sharding" title="Permanent link">&para;</a></h3>
+<p>Directory-based sharding uses a lookup service that maintains a mapping between data keys and their corresponding shards. Instead of using a formula to determine shard placement, you consult a directory service that tells you which shard contains the data you're looking for.</p>
+<p>This approach provides the most flexibility since you can use any logic to determine shard placement and can easily rebalance data between shards. However, it introduces an additional component (the directory service) that must be highly available and performant, as it becomes a potential bottleneck for all database operations.</p>
+<h3 id="geographictenant-based-sharding">Geographic/Tenant-Based Sharding<a class="headerlink" href="#geographictenant-based-sharding" title="Permanent link">&para;</a></h3>
+<p>Some applications shard data based on natural business boundaries, such as geographic regions or customer tenants. A multi-tenant SaaS application might store each customer's data in a separate shard, ensuring data isolation and making it easier to provide customer-specific performance guarantees.</p>
+<p>Geographic sharding places data based on user location or regulatory requirements. For example, a global application might be required to store European user data within the EU for compliance with GDPR regulations.</p>
+<h2 id="real-world-examples">Real-World Examples<a class="headerlink" href="#real-world-examples" title="Permanent link">&para;</a></h2>
+<h3 id="social-media-user-data">Social Media User Data<a class="headerlink" href="#social-media-user-data" title="Permanent link">&para;</a></h3>
+<p>A social media platform like Instagram faces massive scale challenges with billions of users generating posts, comments, and interactions. They might use hash-based sharding on user IDs to distribute user profiles and their associated content across multiple database clusters.</p>
+<p>When a user logs in, the application hashes their user ID to determine which shard contains their profile data. All of that user's posts, followers, and activity data would typically be stored in the same shard to minimize cross-shard queries. However, features like the global timeline or trending posts might require querying multiple shards and aggregating results.</p>
+<h3 id="e-commerce-order-management">E-commerce Order Management<a class="headerlink" href="#e-commerce-order-management" title="Permanent link">&para;</a></h3>
+<p>An e-commerce platform might shard order data by date ranges, with each shard containing orders from specific time periods. Recent orders (which are accessed frequently for shipping updates and customer service) might be stored on high-performance SSD-based shards, while older orders (accessed mainly for historical reporting) could be stored on slower, cheaper storage.</p>
+<p>Alternatively, they might shard by geographic region, storing orders from each region in local data centers to reduce latency for regional fulfillment centers and customer service teams.</p>
+<h3 id="gaming-platforms">Gaming Platforms<a class="headerlink" href="#gaming-platforms" title="Permanent link">&para;</a></h3>
+<p>Online gaming platforms often shard player data by game servers or geographic regions. Each game server cluster might have its own shard containing player profiles, game statistics, and in-game purchases for players in that region. This ensures that game data is stored close to the game servers for optimal performance and provides natural isolation between different gaming regions.</p>
+<h2 id="implementation-considerations">Implementation Considerations<a class="headerlink" href="#implementation-considerations" title="Permanent link">&para;</a></h2>
+<h3 id="cross-shard-queries">Cross-Shard Queries<a class="headerlink" href="#cross-shard-queries" title="Permanent link">&para;</a></h3>
+<p>One of the biggest challenges in sharded systems is handling queries that need data from multiple shards. If you need to generate a report showing all orders from the last month and your data is sharded by customer, you'll need to query every shard and aggregate the results in your application layer.</p>
+<p>These cross-shard operations are typically more complex and slower than single-shard queries. When designing your sharding strategy, try to organize data so that common queries can be satisfied by accessing a single shard whenever possible.</p>
+<h3 id="shard-rebalancing">Shard Rebalancing<a class="headerlink" href="#shard-rebalancing" title="Permanent link">&para;</a></h3>
+<p>As your application grows, you might find that some shards become much larger or busier than others, creating "hot spots" that handle disproportionate amounts of traffic. Rebalancing involves moving data between shards to achieve more even distribution.</p>
+<p>Rebalancing can be complex and risky, especially in production systems that need to remain available during the process. Some sharding systems support automatic rebalancing, while others require manual intervention and careful planning.</p>
+<h3 id="data-consistency">Data Consistency<a class="headerlink" href="#data-consistency" title="Permanent link">&para;</a></h3>
+<p>Maintaining data consistency across shards can be challenging, especially for operations that need to update data in multiple shards. Traditional database transactions don't work across shard boundaries, so you need to implement distributed transaction patterns or design your system to avoid cross-shard transactions.</p>
+<p>Many sharded systems eventual consistency models where updates to related data in different shards may not be immediately synchronized, but will become consistent over time.</p>
+<h2 id="simple-sharding-example">Simple Sharding Example<a class="headerlink" href="#simple-sharding-example" title="Permanent link">&para;</a></h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Hash-based sharding implementation</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ShardManager</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shard_count</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shard_count</span> <span class="o">=</span> <span class="n">shard_count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shards</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;shard_0_db_connection&quot;</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;shard_1_db_connection&quot;</span><span class="p">,</span> 
+            <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;shard_2_db_connection&quot;</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_shard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="c1"># Hash the user_id and determine shard</span>
+        <span class="n">hash_value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(),</span> <span class="mi">16</span><span class="p">)</span>
+        <span class="n">shard_id</span> <span class="o">=</span> <span class="n">hash_value</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">shard_count</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">[</span><span class="n">shard_id</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="n">shard</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_shard</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+        <span class="c1"># Query the appropriate shard for user data</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Fetching user </span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">shard</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">user_data</span><span class="p">):</span>
+        <span class="n">shard</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_shard</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+        <span class="c1"># Insert user data into the appropriate shard</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Creating user </span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">shard</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="c1"># Usage</span>
+<span class="n">shard_manager</span> <span class="o">=</span> <span class="n">ShardManager</span><span class="p">(</span><span class="n">shard_count</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">shard_manager</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="mi">12345</span><span class="p">))</span>    <span class="c1"># Routes to appropriate shard</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">shard_manager</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span><span class="mi">67890</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">}))</span>
+</code></pre></div>
+
+<h2 id="common-interview-questions">Common Interview Questions<a class="headerlink" href="#common-interview-questions" title="Permanent link">&para;</a></h2>
+<p><strong>Q: What is database sharding and why would you use it?</strong></p>
+<p>Database sharding is horizontal partitioning where you split a large database into smaller pieces (shards) distributed across multiple servers. You use it to overcome single-server limitations in storage, processing power, and throughput when your database grows beyond what one server can handle efficiently. Sharding enables horizontal scaling, improves performance by distributing load, allows geographic data distribution, and provides a path for continued growth. It's essential for large-scale applications that need to serve millions of users or store massive amounts of data.</p>
+<p><strong>Q: What are the different sharding strategies and their trade-offs?</strong></p>
+<p>Main strategies include: Range-based (divides by value ranges - simple but can cause uneven distribution), Hash-based (uses hash functions for even distribution but makes range queries difficult), Directory-based (uses lookup service for flexibility but adds complexity), and Geographic/Tenant-based (natural business boundaries for isolation). Hash-based is most common for even distribution, while range-based works well when you often query by ranges. Directory-based offers most flexibility but requires additional infrastructure.</p>
+<p><strong>Q: What challenges does sharding introduce?</strong></p>
+<p>Key challenges include: cross-shard queries (operations spanning multiple shards are complex and slow), data consistency (maintaining ACID properties across shards is difficult), rebalancing (redistributing data as shards become uneven), increased application complexity (routing logic, handling failures), and operational overhead (managing multiple database servers). You also lose some database features like joins across shards and global transactions, requiring application-level solutions.</p>
+<p><strong>Q: How do you handle cross-shard operations?</strong></p>
+<p>Handle cross-shard operations through: application-level aggregation (query multiple shards and combine results), denormalization (duplicate frequently accessed data to avoid cross-shard queries), eventual consistency models (accept temporary inconsistency for performance), distributed transaction patterns (two-phase commit for critical operations), or redesigning your sharding strategy to minimize cross-shard needs. The key is to design your sharding scheme so that most common operations can be satisfied within a single shard.</p>
+<h2 id="sharding-best-practices">Sharding Best Practices<a class="headerlink" href="#sharding-best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="choose-the-right-shard-key">Choose the Right Shard Key<a class="headerlink" href="#choose-the-right-shard-key" title="Permanent link">&para;</a></h3>
+<p>The shard key (the field used to determine which shard stores each record) is the most critical decision in sharding design. A good shard key should distribute data evenly, keep related data together when possible, and align with your most common query patterns.</p>
+<p>Avoid shard keys that can cause hot spots, such as timestamps (if most of your data has recent timestamps) or auto-incrementing IDs (which tend to concentrate recent data in a single shard). User IDs, email hashes, or composite keys often work well for even distribution.</p>
+<h3 id="plan-for-growth">Plan for Growth<a class="headerlink" href="#plan-for-growth" title="Permanent link">&para;</a></h3>
+<p>Design your sharding scheme with future growth in mind. Consider how you'll add new shards, what happens when individual shards reach capacity, and how you'll handle rebalancing. Some systems use consistent hashing to make adding new shards easier, while others over-provision shards initially to avoid rebalancing.</p>
+<h3 id="monitor-shard-health">Monitor Shard Health<a class="headerlink" href="#monitor-shard-health" title="Permanent link">&para;</a></h3>
+<p>Implement comprehensive monitoring for each shard to track performance, storage usage, and query patterns. Uneven shard utilization is a common problem that can lead to performance issues. Regular monitoring helps you identify hot spots before they become critical problems.</p>
+<h3 id="design-for-failure">Design for Failure<a class="headerlink" href="#design-for-failure" title="Permanent link">&para;</a></h3>
+<p>In a sharded system, individual shards will occasionally fail, so design your application to handle shard failures gracefully. This might involve replication within each shard, fallback strategies when shards are unavailable, or graceful degradation of functionality that depends on failed shards.</p>
+<h3 id="keep-transactions-within-shards">Keep Transactions Within Shards<a class="headerlink" href="#keep-transactions-within-shards" title="Permanent link">&para;</a></h3>
+<p>Whenever possible, design your data model and application logic so that transactions only need to access a single shard. Cross-shard transactions are complex, slow, and prone to failure. If you frequently need to update related data that would span multiple shards, consider adjusting your sharding strategy or denormalizing some data.</p>
+<p>Sharding is a powerful technique for scaling databases beyond single-server limitations, but it introduces significant complexity that must be carefully managed. The key to successful sharding is thoughtful planning of your sharding strategy, careful design of your data model to minimize cross-shard operations, and robust monitoring and operational procedures to manage the distributed system effectively.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.sections", "navigation.tracking", "content.code.copy", "content.action.edit", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>

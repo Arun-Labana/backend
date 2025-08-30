@@ -1,0 +1,2432 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A 45-day learning plan covering essential backend concepts with beginner-friendly notes and Java examples.">
+      
+      
+      
+        <link rel="canonical" href="https://Arun-Labana.github.io/backend/28.%20Quorum%20in%20Databases/">
+      
+      
+        <link rel="prev" href="../27.%20Consensus%20Algorithms%20%28Raft%2C%20Paxos%20basics%29/">
+      
+      
+        <link rel="next" href="../29.%20Authentication%20vs%20Authorization/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>28. Quorum in Databases - 45 Days Backend Concepts</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#quorum-in-databases" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="45 Days Backend Concepts" class="md-header__button md-logo" aria-label="45 Days Backend Concepts" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            45 Days Backend Concepts
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              28. Quorum in Databases
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Arun-Labana/backend" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Arun-Labana/backend
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="45 Days Backend Concepts" class="md-nav__button md-logo" aria-label="45 Days Backend Concepts" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    45 Days Backend Concepts
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Arun-Labana/backend" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Arun-Labana/backend
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Days
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Days
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01.%20Connection%20Pooling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    01. Connection Pooling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02.%20Idempotency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    02. Idempotency
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03.%20Caching%20%28In-Memory%20vs%20Distributed%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    03. Caching (In-Memory vs Distributed)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04.%20Load%20Balancing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    04. Load Balancing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05.%20Rate%20Limiting%20%26%20Throttling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    05. Rate Limiting & Throttling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06.%20Horizontal%20vs%20Vertical%20Scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    06. Horizontal vs Vertical Scaling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07.%20Stateless%20vs%20Stateful%20Architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    07. Stateless vs Stateful Architecture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08.%20Transactions%20%28ACID%20properties%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    08. Transactions (ACID properties)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09.%20Indexes%20%28B-Tree%2C%20Hash%2C%20etc.%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    09. Indexes (B-Tree, Hash, etc.)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10.%20Joins%20%26%20Query%20Optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    10. Joins & Query Optimization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11.%20Normalization%20vs%20Denormalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    11. Normalization vs Denormalization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12.%20Sharding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    12. Sharding
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13.%20Replication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    13. Replication
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14.%20CAP%20Theorem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    14. CAP Theorem
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../15.%20REST%20APIs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    15. REST APIs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../16.%20GraphQL%20Basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    16. GraphQL Basics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../17.%20gRPC%20%26%20Protocol%20Buffers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    17. gRPC & Protocol Buffers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../18.%20WebSockets%20%28Realtime%20communication%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    18. WebSockets (Realtime communication)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../19.%20Message%20Queues%20%28RabbitMQ%2C%20Kafka%2C%20SQS%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    19. Message Queues (RabbitMQ, Kafka, SQS)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../20.%20Event-driven%20Architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    20. Event-driven Architecture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../21.%20API%20Gateway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    21. API Gateway
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../22.%20Circuit%20Breaker%20Pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    22. Circuit Breaker Pattern
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../23.%20Retry%20%26%20Backoff%20Strategies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    23. Retry & Backoff Strategies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../24.%20Dead%20Letter%20Queues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    24. Dead Letter Queues
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../25.%20Distributed%20Locks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    25. Distributed Locks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../26.%20Leader%20Election/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    26. Leader Election
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../27.%20Consensus%20Algorithms%20%28Raft%2C%20Paxos%20basics%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    27. Consensus Algorithms (Raft, Paxos basics)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    28. Quorum in Databases
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    28. Quorum in Databases
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-quorum-in-databases" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is Quorum in Databases?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-quorum-mathematics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding Quorum Mathematics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Understanding Quorum Mathematics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-quorum-formula" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Quorum Formula
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#majority-quorum" class="md-nav__link">
+    <span class="md-ellipsis">
+      Majority Quorum
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flexible-quorum-configurations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Flexible Quorum Configurations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#types-of-quorum-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Types of Quorum Systems
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Types of Quorum Systems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#static-quorum" class="md-nav__link">
+    <span class="md-ellipsis">
+      Static Quorum
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamic-quorum" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dynamic Quorum
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sloppy-quorum" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sloppy Quorum
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quorum-in-different-database-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quorum in Different Database Systems
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quorum in Different Database Systems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#apache-cassandra" class="md-nav__link">
+    <span class="md-ellipsis">
+      Apache Cassandra
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#amazon-dynamodb" class="md-nav__link">
+    <span class="md-ellipsis">
+      Amazon DynamoDB
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mongodb-replica-sets" class="md-nav__link">
+    <span class="md-ellipsis">
+      MongoDB Replica Sets
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Applications
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Applications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e-commerce-inventory-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      E-commerce Inventory Management
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#financial-transaction-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Financial Transaction Processing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#social-media-content-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Social Media Content Distribution
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iot-data-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      IoT Data Collection
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simple-quorum-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simple Quorum Implementation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-interview-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Interview Questions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quorum-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quorum Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quorum Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choose-appropriate-quorum-sizes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Choose Appropriate Quorum Sizes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-quorum-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor Quorum Health
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plan-for-failure-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plan for Failure Scenarios
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implement-proper-read-repair" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implement Proper Read Repair
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consider-geographic-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Consider Geographic Distribution
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tune-timeout-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tune Timeout Values
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../29.%20Authentication%20vs%20Authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    29. Authentication vs Authorization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../30.%20JWT%20%26%20OAuth2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    30. JWT & OAuth2
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../31.%20CSRF%20%26%20XSS%20Protection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    31. CSRF & XSS Protection
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../32.%20SQL%20Injection%20%26%20Prevention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    32. SQL Injection & Prevention
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../33.%20HTTPS%20%26%20TLS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    33. HTTPS & TLS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../34.%20CORS%20%28Cross-Origin%20Resource%20Sharing%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    34. CORS (Cross-Origin Resource Sharing)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../35.%20Hashing%20%26%20Password%20Storage%20%28bcrypt%2C%20Argon2%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    35. Hashing & Password Storage (bcrypt, Argon2)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../36.%20Logging%20Strategies%20%28Structured%20Logging%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    36. Logging Strategies (Structured Logging)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../37.%20Metrics%20%26%20Monitoring%20%28Prometheus%2C%20Grafana%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    37. Metrics & Monitoring (Prometheus, Grafana)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../38.%20Tracing%20%28Distributed%20Tracing%2C%20OpenTelemetry%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    38. Tracing (Distributed Tracing, OpenTelemetry)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../39.%20Health%20Checks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    39. Health Checks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../40.%20Profiling%20%26%20Benchmarking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    40. Profiling & Benchmarking
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../41.%20Error%20Handling%20Patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    41. Error Handling Patterns
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../42.%20Blue-Green%20%26%20Canary%20Deployments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    42. Blue-Green & Canary Deployments
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../43.%20CQRS%20%28Command%20Query%20Responsibility%20Segregation%29/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    43. CQRS (Command Query Responsibility Segregation)
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../44.%20Event%20Sourcing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    44. Event Sourcing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../45.%20Microservices%20vs%20Monoliths%20vs%20Serverless/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    45. Microservices vs Monoliths vs Serverless
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-quorum-in-databases" class="md-nav__link">
+    <span class="md-ellipsis">
+      What is Quorum in Databases?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-quorum-mathematics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding Quorum Mathematics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Understanding Quorum Mathematics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-quorum-formula" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Quorum Formula
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#majority-quorum" class="md-nav__link">
+    <span class="md-ellipsis">
+      Majority Quorum
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flexible-quorum-configurations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Flexible Quorum Configurations
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#types-of-quorum-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Types of Quorum Systems
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Types of Quorum Systems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#static-quorum" class="md-nav__link">
+    <span class="md-ellipsis">
+      Static Quorum
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamic-quorum" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dynamic Quorum
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sloppy-quorum" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sloppy Quorum
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quorum-in-different-database-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quorum in Different Database Systems
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quorum in Different Database Systems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#apache-cassandra" class="md-nav__link">
+    <span class="md-ellipsis">
+      Apache Cassandra
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#amazon-dynamodb" class="md-nav__link">
+    <span class="md-ellipsis">
+      Amazon DynamoDB
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mongodb-replica-sets" class="md-nav__link">
+    <span class="md-ellipsis">
+      MongoDB Replica Sets
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-World Applications
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Real-World Applications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#e-commerce-inventory-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      E-commerce Inventory Management
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#financial-transaction-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Financial Transaction Processing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#social-media-content-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Social Media Content Distribution
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iot-data-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      IoT Data Collection
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simple-quorum-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simple Quorum Implementation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-interview-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Interview Questions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quorum-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quorum Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quorum Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choose-appropriate-quorum-sizes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Choose Appropriate Quorum Sizes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-quorum-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor Quorum Health
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plan-for-failure-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plan for Failure Scenarios
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implement-proper-read-repair" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implement Proper Read Repair
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consider-geographic-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Consider Geographic Distribution
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tune-timeout-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tune Timeout Values
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/Arun-Labana/backend/edit/master/docs/28. Quorum in Databases/README.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="quorum-in-databases">Quorum in Databases<a class="headerlink" href="#quorum-in-databases" title="Permanent link">&para;</a></h1>
+<h2 id="what-is-quorum-in-databases">What is Quorum in Databases?<a class="headerlink" href="#what-is-quorum-in-databases" title="Permanent link">&para;</a></h2>
+<p>Quorum in databases is a consensus mechanism that requires a minimum number of replicas to agree on read or write operations before considering the operation successful, ensuring data consistency and availability in distributed database systems. Think of quorum like a jury decision in a courtroom - rather than requiring unanimous agreement from all jurors (which might be impossible if some are absent), the legal system requires agreement from a majority of present jurors to reach a valid verdict. Similarly, database quorum systems require agreement from a majority of available replicas to ensure decisions are valid even when some database nodes are unavailable.</p>
+<p>In distributed databases, data is typically replicated across multiple nodes for fault tolerance and performance. However, this replication introduces challenges: how do you ensure consistency when replicas might have different versions of the same data? How do you handle situations where some replicas are temporarily unavailable? Quorum-based systems solve these problems by requiring a minimum number of replicas to participate in each operation, balancing consistency, availability, and partition tolerance according to the CAP theorem.</p>
+<h2 id="understanding-quorum-mathematics">Understanding Quorum Mathematics<a class="headerlink" href="#understanding-quorum-mathematics" title="Permanent link">&para;</a></h2>
+<h3 id="the-quorum-formula">The Quorum Formula<a class="headerlink" href="#the-quorum-formula" title="Permanent link">&para;</a></h3>
+<p>The fundamental principle of quorum systems is based on the relationship between the number of replicas (N), write quorum (W), and read quorum (R). For strong consistency, the system must satisfy the condition: W + R &gt; N. This ensures that read and write quorums always overlap, meaning any read operation will see the most recent write.</p>
+<p>For example, in a system with 5 replicas (N=5), you might configure W=3 and R=3. This means writes must succeed on at least 3 replicas, and reads must query at least 3 replicas. Since 3+3 &gt; 5, there's guaranteed overlap between any read and write operation, ensuring consistency.</p>
+<h3 id="majority-quorum">Majority Quorum<a class="headerlink" href="#majority-quorum" title="Permanent link">&para;</a></h3>
+<p>The most common quorum configuration is majority quorum, where both reads and writes require more than half of the replicas. In a 5-node system, this would be W=3, R=3. In a 3-node system, it would be W=2, R=2. Majority quorum provides strong consistency while tolerating the failure of up to (N-1)/2 nodes.</p>
+<p>Majority quorum is popular because it's simple to understand and provides good balance between consistency and availability. However, it requires contacting a majority of nodes for every operation, which can impact performance in geographically distributed systems.</p>
+<h3 id="flexible-quorum-configurations">Flexible Quorum Configurations<a class="headerlink" href="#flexible-quorum-configurations" title="Permanent link">&para;</a></h3>
+<p>Different applications have different consistency and performance requirements, leading to various quorum configurations. For read-heavy workloads, you might use W=N, R=1 (write to all replicas, read from any one), providing fast reads but slower writes and reduced write availability.</p>
+<p>For write-heavy workloads, you might use W=1, R=N (write to any replica, read from all), providing fast writes but slower reads. However, these configurations sacrifice strong consistency for performance, making them suitable only for applications that can tolerate eventual consistency.</p>
+<h2 id="types-of-quorum-systems">Types of Quorum Systems<a class="headerlink" href="#types-of-quorum-systems" title="Permanent link">&para;</a></h2>
+<h3 id="static-quorum">Static Quorum<a class="headerlink" href="#static-quorum" title="Permanent link">&para;</a></h3>
+<p>Static quorum systems use fixed values for N, W, and R that don't change during normal operation. These systems are simple to understand and implement, with predictable behavior and clear consistency guarantees. Most traditional distributed databases use static quorum configurations.</p>
+<p>The main limitation of static quorum is that it doesn't adapt to changing conditions. If nodes fail and the remaining nodes can't form a quorum, the system becomes unavailable for writes even if the failed nodes might recover quickly.</p>
+<h3 id="dynamic-quorum">Dynamic Quorum<a class="headerlink" href="#dynamic-quorum" title="Permanent link">&para;</a></h3>
+<p>Dynamic quorum systems can adjust quorum requirements based on the current state of the cluster. When nodes fail, the system might reduce quorum requirements to maintain availability, and when nodes recover, it can restore stronger consistency guarantees.</p>
+<p>Dynamic quorum is more complex to implement correctly but can provide better availability during partial failures. However, it requires careful design to ensure that consistency isn't compromised when quorum requirements are relaxed.</p>
+<h3 id="sloppy-quorum">Sloppy Quorum<a class="headerlink" href="#sloppy-quorum" title="Permanent link">&para;</a></h3>
+<p>Sloppy quorum allows the system to use temporary replacement nodes when primary replicas are unavailable. Instead of failing writes when primary replicas are down, the system writes to alternative nodes and later transfers the data to the correct replicas when they recover.</p>
+<p>This approach improves write availability during failures but can lead to temporary inconsistencies and requires additional mechanisms for data repair and conflict resolution.</p>
+<h2 id="quorum-in-different-database-systems">Quorum in Different Database Systems<a class="headerlink" href="#quorum-in-different-database-systems" title="Permanent link">&para;</a></h2>
+<h3 id="apache-cassandra">Apache Cassandra<a class="headerlink" href="#apache-cassandra" title="Permanent link">&para;</a></h3>
+<p>Cassandra implements tunable consistency through configurable quorum levels. Clients can specify consistency levels for each operation, ranging from ONE (any single replica) to ALL (all replicas) to QUORUM (majority of replicas). This flexibility allows applications to choose the right balance of consistency, availability, and performance for each use case.</p>
+<p>Cassandra also supports LOCAL_QUORUM for multi-datacenter deployments, where quorum is calculated only within the local datacenter, reducing cross-datacenter latency while maintaining consistency within each region.</p>
+<h3 id="amazon-dynamodb">Amazon DynamoDB<a class="headerlink" href="#amazon-dynamodb" title="Permanent link">&para;</a></h3>
+<p>DynamoDB uses quorum-based replication across multiple Availability Zones within a region. By default, DynamoDB uses eventually consistent reads (R=1) for better performance, but applications can request strongly consistent reads (R=majority) when needed.</p>
+<p>DynamoDB's implementation is transparent to users - the service automatically handles quorum management, node failures, and data repair, providing predictable performance and availability guarantees.</p>
+<h3 id="mongodb-replica-sets">MongoDB Replica Sets<a class="headerlink" href="#mongodb-replica-sets" title="Permanent link">&para;</a></h3>
+<p>MongoDB replica sets use a form of quorum for write acknowledgment and read preferences. Write concern can be configured to require acknowledgment from a majority of replicas, while read preference can specify whether to read from primary only, secondary replicas, or any available replica.</p>
+<p>MongoDB's primary-secondary model with quorum-based writes provides strong consistency for applications that need it while allowing flexible read patterns for different performance requirements.</p>
+<h2 id="real-world-applications">Real-World Applications<a class="headerlink" href="#real-world-applications" title="Permanent link">&para;</a></h2>
+<h3 id="e-commerce-inventory-management">E-commerce Inventory Management<a class="headerlink" href="#e-commerce-inventory-management" title="Permanent link">&para;</a></h3>
+<p>E-commerce platforms use quorum-based databases to manage inventory across multiple data centers. When a customer purchases an item, the system uses majority quorum writes to ensure that inventory updates are consistently applied across replicas, preventing overselling due to race conditions between concurrent purchases.</p>
+<p>For inventory reads, the system might use quorum reads during checkout to ensure accurate availability information, but use faster eventually consistent reads for browsing and search to provide better user experience.</p>
+<h3 id="financial-transaction-processing">Financial Transaction Processing<a class="headerlink" href="#financial-transaction-processing" title="Permanent link">&para;</a></h3>
+<p>Financial systems require strong consistency for transaction processing to prevent issues like double-spending or inconsistent account balances. These systems typically use majority quorum for both reads and writes, ensuring that all financial operations see a consistent view of account states.</p>
+<p>The systems often implement additional safeguards like two-phase commit protocols on top of quorum-based replication to provide ACID transaction guarantees across multiple accounts or services.</p>
+<h3 id="social-media-content-distribution">Social Media Content Distribution<a class="headerlink" href="#social-media-content-distribution" title="Permanent link">&para;</a></h3>
+<p>Social media platforms use flexible quorum configurations to balance consistency requirements with global performance. User profile updates might use majority quorum writes to ensure consistency, while timeline reads might use eventually consistent reads from local replicas to minimize latency.</p>
+<p>Content like posts and comments might use sloppy quorum to maintain high write availability during datacenter failures, with background processes handling conflict resolution and ensuring eventual consistency across all replicas.</p>
+<h3 id="iot-data-collection">IoT Data Collection<a class="headerlink" href="#iot-data-collection" title="Permanent link">&para;</a></h3>
+<p>IoT platforms collecting sensor data often use quorum-based systems to ensure data durability while handling the high volume of incoming data. Write operations might use a quorum that ensures data is stored in multiple geographic regions for disaster recovery.</p>
+<p>Read operations for real-time monitoring might use local replicas for low latency, while analytical queries might use quorum reads to ensure they see all available data for accurate analysis.</p>
+<h2 id="simple-quorum-implementation">Simple Quorum Implementation<a class="headerlink" href="#simple-quorum-implementation" title="Permanent link">&para;</a></h2>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Set</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ConsistencyLevel</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">ONE</span> <span class="o">=</span> <span class="s2">&quot;one&quot;</span>
+    <span class="n">QUORUM</span> <span class="o">=</span> <span class="s2">&quot;quorum&quot;</span>
+    <span class="n">ALL</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataItem</span><span class="p">:</span>
+    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="n">version</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">timestamp</span><span class="p">:</span> <span class="n">datetime</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WriteRequest</span><span class="p">:</span>
+    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="n">consistency_level</span><span class="p">:</span> <span class="n">ConsistencyLevel</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ReadRequest</span><span class="p">:</span>
+    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">consistency_level</span><span class="p">:</span> <span class="n">ConsistencyLevel</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OperationResult</span><span class="p">:</span>
+    <span class="n">success</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">error</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseReplica</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replica_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">replica_id</span> <span class="o">=</span> <span class="n">replica_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_available</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write data to this replica&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_available</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Simulate network delay</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">))</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">DataItem</span><span class="p">(</span>
+                <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+                <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span>
+                <span class="n">timestamp</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Replica </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">replica_id</span><span class="si">}</span><span class="s2">: Wrote </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> (v</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataItem</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read data from this replica&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_available</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Simulate network delay</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">))</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">item</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Replica </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">replica_id</span><span class="si">}</span><span class="s2">: Read </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> (v</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">item</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_availability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">available</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Simulate replica failure/recovery&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_available</span> <span class="o">=</span> <span class="n">available</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;available&quot;</span> <span class="k">if</span> <span class="n">available</span> <span class="k">else</span> <span class="s2">&quot;unavailable&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Replica </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">replica_id</span><span class="si">}</span><span class="s2">: Now </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">QuorumDatabase</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replica_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">replicas</span> <span class="o">=</span> <span class="p">{</span><span class="n">rid</span><span class="p">:</span> <span class="n">DatabaseReplica</span><span class="p">(</span><span class="n">rid</span><span class="p">)</span> <span class="k">for</span> <span class="n">rid</span> <span class="ow">in</span> <span class="n">replica_ids</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">replication_factor</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">replica_ids</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version_counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_quorum_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate majority quorum size&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">replication_factor</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_required_replicas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">consistency_level</span><span class="p">:</span> <span class="n">ConsistencyLevel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get number of replicas required for given consistency level&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">consistency_level</span> <span class="o">==</span> <span class="n">ConsistencyLevel</span><span class="o">.</span><span class="n">ONE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">consistency_level</span> <span class="o">==</span> <span class="n">ConsistencyLevel</span><span class="o">.</span><span class="n">QUORUM</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_quorum_size</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">consistency_level</span> <span class="o">==</span> <span class="n">ConsistencyLevel</span><span class="o">.</span><span class="n">ALL</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">replication_factor</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown consistency level: </span><span class="si">{</span><span class="n">consistency_level</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_available_replicas</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">DatabaseReplica</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get list of currently available replicas&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">replica</span> <span class="k">for</span> <span class="n">replica</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">replicas</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">replica</span><span class="o">.</span><span class="n">is_available</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">WriteRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OperationResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write data with specified consistency level&quot;&quot;&quot;</span>
+        <span class="n">required_replicas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_required_replicas</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">consistency_level</span><span class="p">)</span>
+        <span class="n">available_replicas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_available_replicas</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">available_replicas</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">required_replicas</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">OperationResult</span><span class="p">(</span>
+                <span class="n">success</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">error</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Insufficient replicas: need </span><span class="si">{</span><span class="n">required_replicas</span><span class="si">}</span><span class="s2">, have </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">available_replicas</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Generate new version</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">version_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_counter</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Writing </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">consistency_level</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> consistency&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Perform writes in parallel</span>
+        <span class="n">write_threads</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">write_results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">write_to_replica</span><span class="p">(</span><span class="n">replica</span><span class="p">:</span> <span class="n">DatabaseReplica</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">replica</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
+            <span class="n">write_results</span><span class="p">[</span><span class="n">replica</span><span class="o">.</span><span class="n">replica_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
+
+        <span class="c1"># Start write threads for all available replicas</span>
+        <span class="k">for</span> <span class="n">replica</span> <span class="ow">in</span> <span class="n">available_replicas</span><span class="p">:</span>
+            <span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">write_to_replica</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">replica</span><span class="p">,))</span>
+            <span class="n">write_threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thread</span><span class="p">)</span>
+            <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="c1"># Wait for all writes to complete</span>
+        <span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">write_threads</span><span class="p">:</span>
+            <span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+        <span class="c1"># Count successful writes</span>
+        <span class="n">successful_writes</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">success</span> <span class="ow">in</span> <span class="n">write_results</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">success</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">successful_writes</span> <span class="o">&gt;=</span> <span class="n">required_replicas</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Write successful: </span><span class="si">{</span><span class="n">successful_writes</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">available_replicas</span><span class="p">)</span><span class="si">}</span><span class="s2"> replicas&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">OperationResult</span><span class="p">(</span><span class="n">success</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Write failed: only </span><span class="si">{</span><span class="n">successful_writes</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">required_replicas</span><span class="si">}</span><span class="s2"> required replicas&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">OperationResult</span><span class="p">(</span>
+                <span class="n">success</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">error</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Write failed: only </span><span class="si">{</span><span class="n">successful_writes</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">required_replicas</span><span class="si">}</span><span class="s2"> replicas succeeded&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">ReadRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OperationResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read data with specified consistency level&quot;&quot;&quot;</span>
+        <span class="n">required_replicas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_required_replicas</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">consistency_level</span><span class="p">)</span>
+        <span class="n">available_replicas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_available_replicas</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">available_replicas</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">required_replicas</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">OperationResult</span><span class="p">(</span>
+                <span class="n">success</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">error</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Insufficient replicas: need </span><span class="si">{</span><span class="n">required_replicas</span><span class="si">}</span><span class="s2">, have </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">available_replicas</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Reading </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">consistency_level</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> consistency&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Perform reads in parallel</span>
+        <span class="n">read_threads</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">read_results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">read_from_replica</span><span class="p">(</span><span class="n">replica</span><span class="p">:</span> <span class="n">DatabaseReplica</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">replica</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">read_results</span><span class="p">[</span><span class="n">replica</span><span class="o">.</span><span class="n">replica_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
+
+        <span class="c1"># Start read threads for required number of replicas</span>
+        <span class="n">replicas_to_read</span> <span class="o">=</span> <span class="n">available_replicas</span><span class="p">[:</span><span class="n">required_replicas</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">replica</span> <span class="ow">in</span> <span class="n">replicas_to_read</span><span class="p">:</span>
+            <span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">read_from_replica</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">replica</span><span class="p">,))</span>
+            <span class="n">read_threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thread</span><span class="p">)</span>
+            <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="c1"># Wait for all reads to complete</span>
+        <span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">read_threads</span><span class="p">:</span>
+            <span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+        <span class="c1"># Process read results</span>
+        <span class="n">successful_reads</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">read_results</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">successful_reads</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">required_replicas</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">successful_reads</span><span class="p">:</span>
+                <span class="c1"># Return the value with highest version (most recent)</span>
+                <span class="n">latest_item</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">successful_reads</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Read successful: returned v</span><span class="si">{</span><span class="n">latest_item</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">successful_reads</span><span class="p">)</span><span class="si">}</span><span class="s2"> replicas&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">OperationResult</span><span class="p">(</span>
+                    <span class="n">success</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">value</span><span class="o">=</span><span class="n">latest_item</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="n">version</span><span class="o">=</span><span class="n">latest_item</span><span class="o">.</span><span class="n">version</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Read successful: key not found&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">OperationResult</span><span class="p">(</span><span class="n">success</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Read failed: only </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">successful_reads</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">required_replicas</span><span class="si">}</span><span class="s2"> required replicas&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">OperationResult</span><span class="p">(</span>
+                <span class="n">success</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">error</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Read failed: only </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">successful_reads</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">required_replicas</span><span class="si">}</span><span class="s2"> replicas succeeded&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">simulate_replica_failure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replica_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Simulate replica failure&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">replica_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">replicas</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">replicas</span><span class="p">[</span><span class="n">replica_id</span><span class="p">]</span><span class="o">.</span><span class="n">set_availability</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">simulate_replica_recovery</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replica_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Simulate replica recovery&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">replica_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">replicas</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">replicas</span><span class="p">[</span><span class="n">replica_id</span><span class="p">]</span><span class="o">.</span><span class="n">set_availability</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_cluster_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get current cluster status&quot;&quot;&quot;</span>
+        <span class="n">available_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_available_replicas</span><span class="p">())</span>
+        <span class="n">quorum_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_quorum_size</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;total_replicas&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">replication_factor</span><span class="p">,</span>
+            <span class="s1">&#39;available_replicas&#39;</span><span class="p">:</span> <span class="n">available_count</span><span class="p">,</span>
+            <span class="s1">&#39;quorum_size&#39;</span><span class="p">:</span> <span class="n">quorum_size</span><span class="p">,</span>
+            <span class="s1">&#39;can_write_quorum&#39;</span><span class="p">:</span> <span class="n">available_count</span> <span class="o">&gt;=</span> <span class="n">quorum_size</span><span class="p">,</span>
+            <span class="s1">&#39;can_read_quorum&#39;</span><span class="p">:</span> <span class="n">available_count</span> <span class="o">&gt;=</span> <span class="n">quorum_size</span><span class="p">,</span>
+            <span class="s1">&#39;replica_status&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="n">rid</span><span class="p">:</span> <span class="n">replica</span><span class="o">.</span><span class="n">is_available</span> 
+                <span class="k">for</span> <span class="n">rid</span><span class="p">,</span> <span class="n">replica</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">replicas</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+<span class="c1"># Demonstration of quorum-based database operations</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">demo_quorum_database</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Quorum Database Demonstration ===&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Create a 5-replica database cluster</span>
+    <span class="n">replica_ids</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;replica-1&quot;</span><span class="p">,</span> <span class="s2">&quot;replica-2&quot;</span><span class="p">,</span> <span class="s2">&quot;replica-3&quot;</span><span class="p">,</span> <span class="s2">&quot;replica-4&quot;</span><span class="p">,</span> <span class="s2">&quot;replica-5&quot;</span><span class="p">]</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">QuorumDatabase</span><span class="p">(</span><span class="n">replica_ids</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created database with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">replica_ids</span><span class="p">)</span><span class="si">}</span><span class="s2"> replicas&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Quorum size: </span><span class="si">{</span><span class="n">db</span><span class="o">.</span><span class="n">_calculate_quorum_size</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Test normal operations</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Normal Operations ===&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Write with quorum consistency</span>
+    <span class="n">write_result</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">WriteRequest</span><span class="p">(</span><span class="s2">&quot;user:123&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">},</span> <span class="n">ConsistencyLevel</span><span class="o">.</span><span class="n">QUORUM</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Write result: </span><span class="si">{</span><span class="n">write_result</span><span class="o">.</span><span class="n">success</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Read with quorum consistency</span>
+    <span class="n">read_result</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">ReadRequest</span><span class="p">(</span><span class="s2">&quot;user:123&quot;</span><span class="p">,</span> <span class="n">ConsistencyLevel</span><span class="o">.</span><span class="n">QUORUM</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Read result: </span><span class="si">{</span><span class="n">read_result</span><span class="o">.</span><span class="n">success</span><span class="si">}</span><span class="s2">, value: </span><span class="si">{</span><span class="n">read_result</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Test different consistency levels</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Different Consistency Levels ===&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Write with ALL consistency</span>
+    <span class="n">write_result</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">WriteRequest</span><span class="p">(</span><span class="s2">&quot;config:timeout&quot;</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="n">ConsistencyLevel</span><span class="o">.</span><span class="n">ALL</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Write ALL result: </span><span class="si">{</span><span class="n">write_result</span><span class="o">.</span><span class="n">success</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Read with ONE consistency</span>
+    <span class="n">read_result</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">ReadRequest</span><span class="p">(</span><span class="s2">&quot;config:timeout&quot;</span><span class="p">,</span> <span class="n">ConsistencyLevel</span><span class="o">.</span><span class="n">ONE</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Read ONE result: </span><span class="si">{</span><span class="n">read_result</span><span class="o">.</span><span class="n">success</span><span class="si">}</span><span class="s2">, value: </span><span class="si">{</span><span class="n">read_result</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Test failure scenarios</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Failure Scenarios ===&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Simulate failure of 2 replicas</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">simulate_replica_failure</span><span class="p">(</span><span class="s2">&quot;replica-4&quot;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">simulate_replica_failure</span><span class="p">(</span><span class="s2">&quot;replica-5&quot;</span><span class="p">)</span>
+
+    <span class="n">status</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_cluster_status</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cluster status: </span><span class="si">{</span><span class="n">status</span><span class="p">[</span><span class="s1">&#39;available_replicas&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">status</span><span class="p">[</span><span class="s1">&#39;total_replicas&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> replicas available&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Try operations with reduced replicas</span>
+    <span class="n">write_result</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">WriteRequest</span><span class="p">(</span><span class="s2">&quot;user:456&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Jane&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">},</span> <span class="n">ConsistencyLevel</span><span class="o">.</span><span class="n">QUORUM</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Write with failures: </span><span class="si">{</span><span class="n">write_result</span><span class="o">.</span><span class="n">success</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">read_result</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">ReadRequest</span><span class="p">(</span><span class="s2">&quot;user:456&quot;</span><span class="p">,</span> <span class="n">ConsistencyLevel</span><span class="o">.</span><span class="n">QUORUM</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Read with failures: </span><span class="si">{</span><span class="n">read_result</span><span class="o">.</span><span class="n">success</span><span class="si">}</span><span class="s2">, value: </span><span class="si">{</span><span class="n">read_result</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Simulate too many failures</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">simulate_replica_failure</span><span class="p">(</span><span class="s2">&quot;replica-3&quot;</span><span class="p">)</span>
+
+    <span class="n">status</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_cluster_status</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cluster status: </span><span class="si">{</span><span class="n">status</span><span class="p">[</span><span class="s1">&#39;available_replicas&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">status</span><span class="p">[</span><span class="s1">&#39;total_replicas&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> replicas available&quot;</span><span class="p">)</span>
+
+    <span class="n">write_result</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">WriteRequest</span><span class="p">(</span><span class="s2">&quot;user:789&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Bob&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="mi">35</span><span class="p">},</span> <span class="n">ConsistencyLevel</span><span class="o">.</span><span class="n">QUORUM</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Write with too many failures: </span><span class="si">{</span><span class="n">write_result</span><span class="o">.</span><span class="n">success</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">write_result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">write_result</span><span class="o">.</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Recovery</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Recovery ===&quot;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">simulate_replica_recovery</span><span class="p">(</span><span class="s2">&quot;replica-3&quot;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">simulate_replica_recovery</span><span class="p">(</span><span class="s2">&quot;replica-4&quot;</span><span class="p">)</span>
+
+    <span class="n">status</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_cluster_status</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;After recovery: </span><span class="si">{</span><span class="n">status</span><span class="p">[</span><span class="s1">&#39;available_replicas&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">status</span><span class="p">[</span><span class="s1">&#39;total_replicas&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> replicas available&quot;</span><span class="p">)</span>
+
+    <span class="n">write_result</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">WriteRequest</span><span class="p">(</span><span class="s2">&quot;user:789&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Bob&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="mi">35</span><span class="p">},</span> <span class="n">ConsistencyLevel</span><span class="o">.</span><span class="n">QUORUM</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Write after recovery: </span><span class="si">{</span><span class="n">write_result</span><span class="o">.</span><span class="n">success</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">demo_quorum_database</span><span class="p">()</span>
+</code></pre></div>
+
+<h2 id="common-interview-questions">Common Interview Questions<a class="headerlink" href="#common-interview-questions" title="Permanent link">&para;</a></h2>
+<p><strong>Q: What is quorum in distributed databases and why is it important?</strong></p>
+<p>Quorum is a consensus mechanism requiring a minimum number of replicas to agree on operations before considering them successful. It's important because it balances consistency, availability, and partition tolerance in distributed systems. The key principle is W + R &gt; N (write quorum + read quorum &gt; total replicas) to ensure strong consistency. Quorum prevents split-brain scenarios, ensures data consistency across replicas, provides fault tolerance (can survive (N-1)/2 node failures), and allows tunable consistency levels based on application needs. Without quorum, distributed databases would struggle to maintain consistency during network partitions or node failures.</p>
+<p><strong>Q: How do you calculate quorum size and what are different quorum configurations?</strong></p>
+<p>Majority quorum is most common: quorum_size = (N/2) + 1, where N is total replicas. For 5 replicas, majority is 3. Different configurations serve different needs: W=majority, R=majority provides strong consistency with good availability; W=N, R=1 optimizes for read performance but slower writes; W=1, R=N optimizes for write performance but slower reads; W=1, R=1 provides eventual consistency with best performance. The choice depends on whether your application is read-heavy, write-heavy, or needs strong vs eventual consistency. Always ensure W + R &gt; N for strong consistency.</p>
+<p><strong>Q: How does quorum handle network partitions and node failures?</strong></p>
+<p>During network partitions, only the partition with a majority of nodes can continue accepting writes, preventing split-brain scenarios. For example, in a 5-node cluster split 3-2, only the 3-node partition can accept writes. The minority partition becomes read-only or unavailable for writes. When nodes fail, as long as a quorum remains available, the system continues operating. If too many nodes fail (less than quorum available), writes are rejected to maintain consistency. Recovery involves bringing failed nodes back online and synchronizing any missed updates through anti-entropy processes or read repair mechanisms.</p>
+<p><strong>Q: What are the trade-offs between different consistency levels in quorum systems?</strong></p>
+<p>Strong consistency (quorum reads/writes) guarantees immediate consistency but has higher latency and lower availability during failures. Eventual consistency (ONE reads/writes) provides better performance and availability but may return stale data. The trade-offs include: Latency (more replicas contacted = higher latency), Availability (higher consistency requirements = lower availability during failures), Performance (quorum operations are slower than single-replica operations), and Durability (writing to more replicas increases durability). Applications must choose based on their specific requirements for consistency, performance, and availability.</p>
+<h2 id="quorum-best-practices">Quorum Best Practices<a class="headerlink" href="#quorum-best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="choose-appropriate-quorum-sizes">Choose Appropriate Quorum Sizes<a class="headerlink" href="#choose-appropriate-quorum-sizes" title="Permanent link">&para;</a></h3>
+<p>Select quorum configurations based on your consistency and performance requirements. Use majority quorum (W=majority, R=majority) for strong consistency with good fault tolerance. Consider asymmetric configurations (like W=N, R=1) only when you clearly understand the consistency trade-offs.</p>
+<h3 id="monitor-quorum-health">Monitor Quorum Health<a class="headerlink" href="#monitor-quorum-health" title="Permanent link">&para;</a></h3>
+<p>Implement comprehensive monitoring for quorum operations including success rates, latency, and replica availability. Track metrics like quorum formation time, read/write success rates, and replica lag to identify issues before they impact applications.</p>
+<h3 id="plan-for-failure-scenarios">Plan for Failure Scenarios<a class="headerlink" href="#plan-for-failure-scenarios" title="Permanent link">&para;</a></h3>
+<p>Design your system to handle various failure scenarios including network partitions, cascading failures, and split-brain situations. Test failure scenarios regularly and ensure your applications can handle quorum unavailability gracefully.</p>
+<h3 id="implement-proper-read-repair">Implement Proper Read Repair<a class="headerlink" href="#implement-proper-read-repair" title="Permanent link">&para;</a></h3>
+<p>Use read repair mechanisms to detect and fix inconsistencies between replicas. When reads detect conflicting versions, implement conflict resolution strategies and background processes to maintain replica consistency.</p>
+<h3 id="consider-geographic-distribution">Consider Geographic Distribution<a class="headerlink" href="#consider-geographic-distribution" title="Permanent link">&para;</a></h3>
+<p>For geographically distributed systems, consider using local quorum within datacenters to reduce latency while maintaining global consistency through cross-datacenter replication. Balance consistency requirements with performance needs across different regions.</p>
+<h3 id="tune-timeout-values">Tune Timeout Values<a class="headerlink" href="#tune-timeout-values" title="Permanent link">&para;</a></h3>
+<p>Configure appropriate timeout values for quorum operations based on your network characteristics and availability requirements. Balance between quick failure detection and avoiding false positives during temporary network issues.</p>
+<p>Quorum systems provide the foundation for building consistent, available, and partition-tolerant distributed databases. Understanding quorum mathematics and trade-offs is essential for designing systems that meet specific consistency and performance requirements while handling the realities of distributed system failures.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.sections", "navigation.tracking", "content.code.copy", "content.action.edit", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>
